@@ -10,6 +10,7 @@
 namespace CT {
 
 Tracker::Tracker() {
+	printf("tracker");
 	// TODO Auto-generated constructor stub
 
 }

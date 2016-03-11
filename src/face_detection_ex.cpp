@@ -9,6 +9,7 @@
 #include "tracker.h"
 
 int main(int argc, char* argv[]) {
+	CT::Tracker t;
 	try {
 		cv::VideoCapture cap(0);
 		dlib::image_window win;
