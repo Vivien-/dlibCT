@@ -50,8 +50,8 @@ void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel
 }
 
 void Controller::deleteUselessTracker() {
-	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
-		for(auto it2 = trackers.begin(); it2 != trackers.end(); ) {
+	for(std::vector<dlib::correlation_tracker>::iterator it = trackers.begin(); it != trackers.end(); ++it) {
+		for(std::vector<dlib::correlation_tracker>::iterator it2 = trackers.begin(); it2 != trackers.end(); ) {
 			if(dlib::center(it->get_position()) != dlib::center(it2->get_position())) {
 				if(it->get_position().contains(it2->get_position()))
 					trackers.erase(it2++);
