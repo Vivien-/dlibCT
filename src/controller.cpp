@@ -50,14 +50,15 @@ void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel
 }
 
 void Controller::deleteUselessTracker() {
-	for(auto it = trackers.begin(); it != trackers.end(); ) {
-		dlib::correlation_tracker cur = trackers[it];
+	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
 		for(auto it2 = trackers.begin(); it2 != trackers.end(); ) {
-			dlib::correlation_tracker that = trackers[it2];
-			if(cur != that) {
-				if(cur.get_position().contains(that.get_position()))
-
-			}
+			if(dlib::center(it->get_position()) != dlib::center(it2->get_position())) {
+				if(it->get_position().contains(it2->get_position()))
+					trackers.erase(it2++);
+				else
+					++it2;
+			} else
+				++it2;
 		}
 	}
 }
