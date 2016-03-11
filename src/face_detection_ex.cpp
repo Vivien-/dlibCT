@@ -12,32 +12,41 @@ int main(int argc, char* argv[]) {
 	try {
 		cv::VideoCapture cap(0);
 		dlib::image_window win;
-		cap.set(CV_CAP_PROP_FRAME_WIDTH, 800);
-		cap.set(CV_CAP_PROP_FRAME_HEIGHT, 520);
+		//		cap.set(CV_CAP_PROP_FRAME_WIDTH, 800);
+		//		cap.set(CV_CAP_PROP_FRAME_HEIGHT, 520);
 
 		CT::Detector d;
 		CT::Controller controller;
-
+		uint64 nfrm = 0;
 		// Grab and process frames until the main window is closed by the user.
+		dlib::point p1;
+		dlib::point p2;
 		while(!win.is_closed()) {
 			// Grab a frame
 			cv::Mat temp;
 			cap >> temp;
 
+
 			// Turn OpenCV's Mat into something dlib can deal with. don't modify temp while using cimg.
 			dlib::cv_image<dlib::bgr_pixel> cimg(temp);
 
 			// Detect faces
-			std::vector<dlib::rectangle> faces = d.detect(cimg);
-
-			//don't track already tracked face
-			controller.process(faces, cimg);
+			if(nfrm++ % 100 == 0) {
+				std::vector<dlib::rectangle> faces = d.detect(cimg);
+				controller.process(faces, cimg);
+			}
 
 			//update tracker
 			controller.update(cimg);
+			dlib::draw_line(cimg, p1, p2, dlib::rgb_pixel(0,0,255));
 
 			//display tracked object
 			controller.display(win, cimg);
+
+			if(nfrm == 1) {
+				win.get_next_double_click(p1);
+				win.get_next_double_click(p2);
+			}
 		}
 	}
 	catch(dlib::serialization_error& e)	{
