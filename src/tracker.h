@@ -13,6 +13,7 @@
 #include <dlib/image_processing/render_face_detections.h>
 #include <dlib/image_processing.h>
 #include <dlib/gui_widgets.h>
+#include "identifiert.h"
 
 namespace CT {
 
@@ -21,16 +22,18 @@ public:
 	Tracker();
 	virtual ~Tracker();
 	void initTrack(dlib::cv_image<dlib::bgr_pixel> & img, dlib::rectangle & rect);
-	void track(dlib::cv_image<dlib::bgr_pixel> & img);
 	dlib::point initial() const;
 	dlib::point current() const;
+	dlib::correlation_tracker getTracker();
 	void setInitial(const dlib::point &p);
 	void setCurrent(const dlib::point &p);
-	int getId() const;
+	CT::identifier_t getId() const;
+	double update(dlib::cv_image<dlib::bgr_pixel> & img);
 
 private:
 	dlib::correlation_tracker m_tr;
-	int m_id;
+	CT::identifier_t m_id;
+	CT::identifier_t m_counter_id;
 	dlib::point m_current;
 	dlib::point m_initial;
 };

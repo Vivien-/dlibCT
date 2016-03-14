@@ -19,24 +19,24 @@ Counter::~Counter() {
 	std::cout<<"~Counter()"<<std::endl;
 }
 
-Counter::Counter(dlib::point &p1, dlib::point &p2, int id_): m_id(id_){
-	m_p1 = p1;
-	m_p2 = p2;
-	m_a = (p1.y() - p2.y())/(p1.x() - p2.x());
-	m_b = p1.y() - m_a*p1.x();
+Counter::Counter(CT::Line &l, int id_): m_id(id_) {
+	// Computes the slope and coordinate at origin of the line
+	m_line = l;
+	m_a = (m_line.getFirstEndpoint().y() - m_line.getSecondEndpoint().y())/(m_line.getFirstEndpoint().x() - m_line.getSecondEndpoint().x());
+	m_b = m_line.getFirstEndpoint().y() - m_a*m_line.getFirstEndpoint().x();
 	m_in = 0;
 	m_out = 0;
 	m_stay = 0;
 }
 
 
-void Counter::addTracker(Tracker& tracker){
+void Counter::addTracker(CT::Tracker& tracker){
 	trackers.push_back(tracker);
 }
 
 
-int Counter::removeTracker(Tracker& tracker){
-//return tracker position in trackers
+int Counter::removeTracker(CT::Tracker& tracker){
+	//return tracker position in trackers
 	//trackers.erase(trackers.begin()+ position);
 	return -1;
 }
@@ -51,12 +51,13 @@ int Counter::getOut() const{
 }
 
 void Counter::updateSituation() {
+	// Number of object that entered or left the line linked to this Counter instance
 	std::cout<<"nb of tracker in counter "<<m_id<<": "<<trackers.size()<<std::endl;
 	for(uint i = 0; i < trackers.size(); i++){
 		dlib::point c = trackers[i].current();
 		dlib::point init = trackers[i].initial();
 		std::cout<<"["<<__FILE__<<":"<< __LINE__<<" "<<__func__<<"] Initial pos of tracker "<<trackers[i].getId()<<" is "<<init<<std::endl;
-		if(c.y() >= std::min(m_p1.y(), m_p2.y()) && c.y() <= std::max(m_p1.y(), m_p2.y())) {
+		if(c.y() >= std::min(m_line.getFirstEndpoint().y(), m_line.getSecondEndpoint().y()) && c.y() <= std::max(m_line.getFirstEndpoint().y(), m_line.getSecondEndpoint().y())) {
 			if(!isInside(init) && isInside(c)) {
 				m_in ++;
 				trackers[i].setInitial(c);
@@ -80,14 +81,12 @@ bool Counter::isInside(const dlib::point& c) const {
 }
 
 
-int Counter::getId() const{
+CT::identifier_t Counter::getId() const{
 	return m_id;
 }
 
-
-void Counter::setLine(dlib::point &p1, dlib::point &p2) {
-	m_p1 = p1;
-	m_p2 = p2;
+void Counter::setLine(CT::Line &l) {
+	m_line = l;
 }
 
 } // Namespace CT

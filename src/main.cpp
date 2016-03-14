@@ -5,7 +5,6 @@
 #include <dlib/image_processing.h>
 #include <dlib/gui_widgets.h>
 #include "controller.h"
-#include "detector.h"
 #include "tracker.h"
 
 int main(int argc, char* argv[]) {
@@ -50,6 +49,7 @@ int main(int argc, char* argv[]) {
 			if(nfrm == 1) {
 				win.get_next_double_click(p1);
 				win.get_next_double_click(p2);
+				controller.addLine(p1,p2);
 			}
 		}
 	} catch(dlib::serialization_error& e)	{

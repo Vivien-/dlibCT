@@ -20,6 +20,8 @@
 #include <dlib/image_processing.h>
 #include <dlib/gui_widgets.h>
 #include "tracker.h"
+#include "identifiert.h"
+#include "line.h"
 
 namespace CT {
 
@@ -28,19 +30,19 @@ class Counter {
 public:
 	Counter();
 	virtual ~Counter();
-	Counter(dlib::point &p1, dlib::point &p2, int id_);
+	Counter(CT::Line &l, int id_);
 	void addTracker(CT::Tracker& tracker);
 	int removeTracker(CT::Tracker& tracker);
 	int getIn() const;
 	int getOut() const;
 	void updateSituation();
-	int getId() const;
-	void setLine(dlib::point &p1, dlib::point &p2);
+	CT::identifier_t getId() const;
+	void setLine(CT::Line &l);
 	std::vector<CT::Tracker> trackers;
+
 private:
-	int m_id;
-	dlib::point m_p1;
-	dlib::point m_p2;
+	CT::identifier_t m_id;
+	CT::Line m_line;
 	float m_a;
 	float m_b;
 	int m_in, m_out, m_stay;

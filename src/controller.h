@@ -2,7 +2,9 @@
  * controller.h
  *
  *  Created on: 11 mars 2016
- *      Author: vivien
+ *      Author: vivien & mohammed
+ *
+ *  The class Controller manages the diferrent parts of the software : lines, counters and trackers
  */
 
 #ifndef SRC_CONTROLLER_H_
@@ -13,6 +15,9 @@
 #include <dlib/image_processing/render_face_detections.h>
 #include <dlib/image_processing.h>
 #include <dlib/gui_widgets.h>
+#include "tracker.h"
+#include "counter.h"
+#include "line.h"
 
 namespace CT {
 
@@ -20,14 +25,27 @@ class Controller {
 public:
 	Controller();
 	virtual ~Controller();
+	// Track newly detected faces if don't overlap with already tracked face
 	void process(std::vector<dlib::rectangle> & objDetected, dlib::cv_image<dlib::bgr_pixel> & cimg);
+	// Update all trackers position for the current frame
 	void update(dlib::cv_image<dlib::bgr_pixel> & cimg);
+	// Display all the trackers on the current frame
 	void display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel> & cimg);
-	void deleteUselessTracker();
+	// Create a new line (following the user chosing the 2 endpoints on the image)
+	void addLine(dlib::point &p1, dlib::point &p2);
+	// For each line, update the number of tracker that entered or left that line
+	void updateCountersSituation();
+	// Attach a tracker to a counter (a counter own multiple trackers)
+	void setTrackerToCounter(CT::identifier_t idTracker, CT::identifier_t idCounter);
 
 private:
-	std::vector<dlib::correlation_tracker> trackers;
-
+	std::vector<CT::Tracker> trackers;
+	// Next id is used to determinate the next line id and counter id (which are the same)
+	CT::identifier_t next_id;
+	std::vector<CT::Counter> counters;
+	std::vector<CT::Line> lines;
+	// Threshold value of wether we keep a tracker or remove it (depending of the confidence of the tracker)
+ 	double m_threshold;
 };
 
 } /* namespace CT */

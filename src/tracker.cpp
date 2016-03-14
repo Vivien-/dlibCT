@@ -21,11 +21,10 @@ Tracker::~Tracker() {
 
 void Tracker::initTrack(dlib::cv_image<dlib::bgr_pixel> & img, dlib::rectangle & rect){
 	m_tr.start_track(img, rect);
+	m_initial = dlib::center(m_tr.get_position());
 }
 
-void Tracker::track(dlib::cv_image<dlib::bgr_pixel> & img) {
-	m_tr.update(img);
-}
+
 
 dlib::point Tracker::initial() const {
 	return m_initial;
@@ -43,8 +42,18 @@ void Tracker::setCurrent(const dlib::point &p) {
 	m_current = p;
 }
 
-int Tracker::getId() const {
+CT::identifier_t Tracker::getId() const {
 	return m_id;
+}
+
+double Tracker::update(dlib::cv_image<dlib::bgr_pixel> & img) {
+	double confidence = m_tr.update(img);
+	m_current = dlib::center(m_tr.get_position());
+	return confidence;
+}
+
+dlib::correlation_tracker Tracker::getTracker(){
+	return m_tr;
 }
 
 } /* namespace CT */
