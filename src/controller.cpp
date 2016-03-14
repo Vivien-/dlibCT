@@ -45,8 +45,10 @@ void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel> & cimg){
 	win.clear_overlay();
 	win.set_image(cimg);
-	for(uint i = 0; i < trackers.size(); i++)
-		win.add_overlay(trackers[i].get_position(), dlib::rgb_pixel(0,255,0));
+	for(uint i = 0; i < trackers.size(); i++) {
+		win.add_overlay(dlib::image_window::overlay_circle(dlib::center(trackers[i].get_position()), 5, dlib::rgb_pixel(0,255,0), std::to_string(i)));
+	}
+
 }
 
 void Controller::deleteUselessTracker() {
