@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 		//		cap.set(CV_CAP_PROP_FRAME_WIDTH, 800);
 		//		cap.set(CV_CAP_PROP_FRAME_HEIGHT, 520);
 
-		CT::Detector d;
+		dlib::frontal_face_detector d = dlib::get_frontal_face_detector();
 		CT::Controller controller;
 		uint64 nfrm = 0;
 
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 
 			// Detect faces
 			if(nfrm++ % 100 == 0) {
-				std::vector<dlib::rectangle> faces = d.detect(cimg);
+				std::vector<dlib::rectangle> faces = d(cimg);
 				controller.process(faces, cimg);
 			}
 
