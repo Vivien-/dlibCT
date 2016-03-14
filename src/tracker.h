@@ -22,9 +22,17 @@ public:
 	virtual ~Tracker();
 	void initTrack(dlib::cv_image<dlib::bgr_pixel> & img, dlib::rectangle & rect);
 	void track(dlib::cv_image<dlib::bgr_pixel> & img);
+	dlib::point initial() const;
+	dlib::point current() const;
+	void setInitial(const dlib::point &p);
+	void setCurrent(const dlib::point &p);
+	int getId() const;
 
 private:
-	dlib::correlation_tracker tr;
+	dlib::correlation_tracker m_tr;
+	int m_id;
+	dlib::point m_current;
+	dlib::point m_initial;
 };
 
 } /* namespace CT */
