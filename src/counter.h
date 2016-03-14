@@ -48,6 +48,6 @@ private:
 };
 
 
-}//Namespace CT
+} //Namespace CT
 
 #endif /* COUNTER_H_ */
