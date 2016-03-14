@@ -6,6 +6,7 @@
  */
 
 #include "controller.h"
+#include <boost/lexical_cast.hpp>
 
 namespace CT {
 
@@ -46,7 +47,7 @@ void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel
 	win.clear_overlay();
 	win.set_image(cimg);
 	for(uint i = 0; i < trackers.size(); i++) {
-		win.add_overlay(dlib::image_window::overlay_circle(dlib::center(trackers[i].get_position()), 5, dlib::rgb_pixel(0,255,0), "toto"));
+		win.add_overlay(dlib::image_window::overlay_circle(dlib::center(trackers[i].get_position()), 5, dlib::rgb_pixel(0,255,0), boost::lexical_cast<std::string>(i)));
 	}
 
 }
@@ -55,8 +56,10 @@ void Controller::deleteUselessTracker() {
 	for(std::vector<dlib::correlation_tracker>::iterator it = trackers.begin(); it != trackers.end(); ++it) {
 		for(std::vector<dlib::correlation_tracker>::iterator it2 = trackers.begin(); it2 != trackers.end(); ) {
 			if(dlib::center(it->get_position()) != dlib::center(it2->get_position())) {
-				if(it->get_position().contains(it2->get_position()))
+				if(it->get_position().contains(it2->get_position())){
 					trackers.erase(it2++);
+					break;
+				}
 				else
 					++it2;
 			} else
