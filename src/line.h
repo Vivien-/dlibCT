@@ -13,7 +13,6 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <dlib/gui_widgets.h>
-#include "tracker.h"
 #include "identifiert.h"
 
 namespace CT {

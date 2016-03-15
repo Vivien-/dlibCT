@@ -6,7 +6,7 @@
  */
 
 #include "counter.h"
-
+#include "tracker.h"
 #include <opencv2/opencv.hpp>
 
 namespace CT {
@@ -28,7 +28,6 @@ Counter::Counter(CT::Line &l, int id_): m_id(id_) {
 	m_out = 0;
 	m_stay = 0;
 }
-
 
 void Counter::addTracker(CT::Tracker& tracker){
 	m_trackers.push_back(tracker);

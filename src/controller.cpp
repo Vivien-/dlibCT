@@ -70,7 +70,7 @@ void Controller::addLine(dlib::point &p1, dlib::point &p2) {
 void Controller::updateCountersSituation() {
 	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
 		CT::identifier_t bestLineId = 0;	// TODO bestLineId = someComputationToGetTheBestLineId();
-		setTrackerToCounter(it->getId(), bestLineId);
+//		setTrackerToCounter(*it, counters[0]);
 	}
 	// Count the number of object entering/leaving a line (i.e. a counter)
 	for(auto it = counters.begin(); it != counters.end(); ++it)
@@ -78,7 +78,7 @@ void Controller::updateCountersSituation() {
 }
 
 void Controller::setTrackerToCounter(CT::Tracker * tr, CT::Counter * ctr){
-	tr->setCounter(ctr);
+//	tr->setCounter(ctr);
 }
 
 } /* namespace CT */

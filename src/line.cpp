@@ -9,7 +9,6 @@
 
 namespace CT {
 
-
 Line::Line() {
 	// TODO Auto-generated constructor stub
 }
@@ -44,4 +43,4 @@ void Line::setSecondEndpoint(int _x, int _y){
 	m_p2 = dlib::point(_x, _y);
 }
 
-}
+} // Namespace CT

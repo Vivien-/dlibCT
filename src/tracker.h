@@ -16,6 +16,10 @@
 #include "identifiert.h"
 
 namespace CT {
+class Counter;
+}
+
+namespace CT {
 
 class Tracker {
 public:

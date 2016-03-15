@@ -19,9 +19,12 @@
 #include <dlib/image_processing/render_face_detections.h>
 #include <dlib/image_processing.h>
 #include <dlib/gui_widgets.h>
-#include "tracker.h"
 #include "identifiert.h"
 #include "line.h"
+
+namespace CT {
+class Tracker;
+}
 
 namespace CT {
 
@@ -40,7 +43,7 @@ public:
 	void setLine(CT::Line &l);
 
 private:
-	std::vector<CT::Tracker> m_trackers;
+	std::vector<CT::Tracker > m_trackers;
 	CT::identifier_t m_id;
 	CT::Line m_line;
 	float m_a;

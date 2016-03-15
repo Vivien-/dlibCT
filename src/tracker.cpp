@@ -6,6 +6,7 @@
  */
 
 #include "tracker.h"
+#include "counter.h"
 
 namespace CT {
 
