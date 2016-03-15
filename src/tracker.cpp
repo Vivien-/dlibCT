@@ -10,19 +10,21 @@
 
 namespace CT {
 
-Tracker::Tracker() {
-	printf("tracker");
-	m_id = 0;
-	m_ctr = nullptr;
+Tracker::Tracker(){
+
+}
+Tracker::Tracker(identifier_t & id, identifier_t & ctr) {
+	m_id = id;
+	m_ctr = ctr;
 }
 
 Tracker::~Tracker() {
-	delete m_ctr;
 }
 
 void Tracker::initTrack(dlib::cv_image<dlib::bgr_pixel> & img, dlib::rectangle & rect){
 	m_tr.start_track(img, rect);
 	m_initial = dlib::center(rect);
+	m_current = dlib::center(rect);
 }
 
 dlib::point Tracker::initial() const {
@@ -55,8 +57,8 @@ dlib::correlation_tracker Tracker::getTracker(){
 	return m_tr;
 }
 
-void Tracker::setCounter(CT::Counter & ctr) {
-	m_ctr = new CT::Counter(ctr);
+void Tracker::setCounter(CT::identifier_t & ctr) {
+	m_ctr = ctr;
 }
 
 } /* namespace CT */

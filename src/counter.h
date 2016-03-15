@@ -32,8 +32,9 @@ namespace CT {
 class Counter {
 public:
 	Counter();
+
 	virtual ~Counter();
-	Counter(CT::identifier_t &l);
+	Counter(CT::identifier_t id, CT::identifier_t &l);
 	void addTracker(CT::identifier_t & tracker);
 	void removeTracker(CT::identifier_t & tracker);
 	int getIn() const;

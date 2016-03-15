@@ -12,14 +12,12 @@
 namespace CT {
 
 Counter::Counter() {
-	m_stay = 0;
-	m_out = 0;
-	m_in = 0;
-	m_id = 0;
+
 }
 
-Counter::Counter(CT::identifier_t &l) {
+Counter::Counter(CT::identifier_t id, CT::identifier_t &l) {
 	// Computes the slope and coordinate at origin of the line
+	m_id = id;
 	m_id_line = l;
 	//m_a = (m_line.getFirstEndpoint().y() - m_line.getSecondEndpoint().y())/(m_line.getFirstEndpoint().x() - m_line.getSecondEndpoint().x());
 	//m_b = m_line.getFirstEndpoint().y() - m_a*m_line.getFirstEndpoint().x();
