@@ -14,7 +14,6 @@ Tracker::Tracker() {
 	printf("tracker");
 	m_id = 0;
 	m_ctr = nullptr;
-	// TODO Auto-generated constructor stub
 }
 
 Tracker::~Tracker() {

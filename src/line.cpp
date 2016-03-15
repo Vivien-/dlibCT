@@ -10,7 +10,7 @@
 namespace CT {
 
 Line::Line() {
-	// TODO Auto-generated constructor stub
+	m_id = 0;
 }
 
 Line::Line(dlib::point &a, dlib::point &b, CT::identifier_t id_) {

@@ -12,11 +12,12 @@
 namespace CT {
 
 Counter::Counter() {
-}
-
-Counter::~Counter() {
-	// TODO Auto-generated destructor stub
-	std::cout<<"~Counter()"<<std::endl;
+	m_a = 0;
+	m_b = 0;
+	m_stay = 0;
+	m_out = 0;
+	m_in = 0;
+	m_id = 0;
 }
 
 Counter::Counter(CT::Line &l, int id_): m_id(id_) {
@@ -27,6 +28,10 @@ Counter::Counter(CT::Line &l, int id_): m_id(id_) {
 	m_in = 0;
 	m_out = 0;
 	m_stay = 0;
+}
+
+Counter::~Counter() {
+	std::cout<<"~Counter()"<<std::endl;
 }
 
 void Counter::addTracker(CT::Tracker& tracker){
