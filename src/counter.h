@@ -33,23 +33,24 @@ class Counter {
 public:
 	Counter();
 	virtual ~Counter();
-	Counter(CT::Line &l, int id_);
-	void addTracker(CT::Tracker& tracker);
-	int removeTracker(CT::Tracker& tracker);
+	Counter(CT::identifier_t &l);
+	void addTracker(CT::identifier_t & tracker);
+	void removeTracker(CT::identifier_t & tracker);
 	int getIn() const;
 	int getOut() const;
-	void updateSituation();
+	void incrIn();
+	void incrOut();
+	int getCount();
+	//void updateSituation();
 	CT::identifier_t getId() const;
-	void setLine(CT::Line &l);
+	void setLine(CT::identifier_t &l);
 
 private:
-	std::vector<CT::Tracker > m_trackers;
+	std::map<CT::identifier_t,int> m_id_trackers;
 	CT::identifier_t m_id;
-	CT::Line m_line;
-	float m_a;
-	float m_b;
+	CT::identifier_t m_id_line;
 	int m_in, m_out, m_stay;
-	bool isInside(const dlib::point& c) const;
+	//bool isInside(const dlib::point& c) const;
 };
 
 
