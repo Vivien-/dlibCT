@@ -33,16 +33,21 @@ public:
 	void setCurrent(const dlib::point &p);
 	CT::identifier_t getId() const;
 	double update(dlib::cv_image<dlib::bgr_pixel> & img);
-	void setCounter(CT::Counter * ctr);
+	void setCounter(CT::Counter & ctr);
+
 
 private:
 	dlib::correlation_tracker m_tr;
 	CT::identifier_t m_id;
-	CT::identifier_t m_counter_id;
+	CT::Counter* m_ctr;
 	dlib::point m_current;
 	dlib::point m_initial;
 };
 
 } /* namespace CT */
+
+inline bool operator==(const CT::Tracker& t1, const CT::Tracker& t2){ return t1.getId() == t2.getId(); }
+inline bool operator!=(const CT::Tracker& t1, const CT::Tracker& t2){ return !operator==(t1,t2); }
+
 
 #endif /* SRC_TRACKER_H_ */

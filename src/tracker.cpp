@@ -5,24 +5,25 @@
  *      Author: vivien
  */
 
-#include "tracker.h"
 #include "counter.h"
+#include "tracker.h"
 
 namespace CT {
 
 Tracker::Tracker() {
 	printf("tracker");
 	m_id = 0;
+	m_ctr = nullptr;
 	// TODO Auto-generated constructor stub
 }
 
 Tracker::~Tracker() {
-	// TODO Auto-generated destructor stub
+	delete m_ctr;
 }
 
 void Tracker::initTrack(dlib::cv_image<dlib::bgr_pixel> & img, dlib::rectangle & rect){
 	m_tr.start_track(img, rect);
-	m_initial = dlib::center(m_tr.get_position());
+	m_initial = dlib::center(rect);
 }
 
 dlib::point Tracker::initial() const {
@@ -55,8 +56,8 @@ dlib::correlation_tracker Tracker::getTracker(){
 	return m_tr;
 }
 
-void setCounter(CT::Counter * ctr) {
-//TODO
+void Tracker::setCounter(CT::Counter & ctr) {
+	m_ctr = new CT::Counter(ctr);
 }
 
 } /* namespace CT */

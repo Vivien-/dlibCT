@@ -36,7 +36,9 @@ public:
 	// For each line, update the number of tracker that entered or left that line
 	void updateCountersSituation();
 	// Attach a tracker to a counter (a counter own multiple trackers)
-	void setTrackerToCounter(CT::Tracker * tr, CT::Counter * ctr);
+	void setTrackerToCounter(CT::Tracker& tr, CT::Counter& ctr);
+	// debug
+	void printSituation();
 
 private:
 	std::vector<CT::Tracker> trackers;

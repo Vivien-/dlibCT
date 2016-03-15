@@ -62,23 +62,37 @@ void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel
 
 void Controller::addLine(dlib::point &p1, dlib::point &p2) {
 	CT::Line l = CT::Line(p1, p2, next_id);
+	CT::Counter c(l, next_id);
+	c.setLine(l);
 	lines.push_back(l);
-	counters.push_back(Counter(l,next_id));
+	counters.push_back(c);
 	next_id++;
 }
 
 void Controller::updateCountersSituation() {
 	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
-		CT::identifier_t bestLineId = 0;	// TODO bestLineId = someComputationToGetTheBestLineId();
-//		setTrackerToCounter(*it, counters[0]);
+		setTrackerToCounter(*it, counters[0]);
 	}
 	// Count the number of object entering/leaving a line (i.e. a counter)
 	for(auto it = counters.begin(); it != counters.end(); ++it)
 		it->updateSituation();
 }
 
-void Controller::setTrackerToCounter(CT::Tracker * tr, CT::Counter * ctr){
-//	tr->setCounter(ctr);
+void Controller::setTrackerToCounter(CT::Tracker& tr, CT::Counter& ctr){
+	tr.setCounter(ctr);
+	ctr.addTracker(tr);
 }
+
+void Controller::printSituation() {
+	if(lines.size()) {
+		updateCountersSituation();
+		for(auto it = counters.begin(); it != counters.end(); ++it) {
+			int entered = it->getIn();
+			int left = it->getOut();
+			std::cout<<"entered: "<<entered<<" left: "<<left<<std::endl;
+		}
+	}
+}
+
 
 } /* namespace CT */
