@@ -24,8 +24,6 @@ void Tracker::initTrack(dlib::cv_image<dlib::bgr_pixel> & img, dlib::rectangle &
 	m_initial = dlib::center(m_tr.get_position());
 }
 
-
-
 dlib::point Tracker::initial() const {
 	return m_initial;
 }
@@ -54,6 +52,10 @@ double Tracker::update(dlib::cv_image<dlib::bgr_pixel> & img) {
 
 dlib::correlation_tracker Tracker::getTracker(){
 	return m_tr;
+}
+
+void setCounter(CT::Counter * ctr) {
+//TODO
 }
 
 } /* namespace CT */

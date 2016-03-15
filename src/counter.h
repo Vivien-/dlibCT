@@ -38,9 +38,9 @@ public:
 	void updateSituation();
 	CT::identifier_t getId() const;
 	void setLine(CT::Line &l);
-	std::vector<CT::Tracker> trackers;
 
 private:
+	std::vector<CT::Tracker> m_trackers;
 	CT::identifier_t m_id;
 	CT::Line m_line;
 	float m_a;

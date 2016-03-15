@@ -77,12 +77,8 @@ void Controller::updateCountersSituation() {
 		it->updateSituation();
 }
 
-void Controller::setTrackerToCounter(CT::identifier_t idTracker, CT::identifier_t idCounter){
-//		int oldcounterid = trackers[idTracker].getCounterId();
-//		if(oldcounterid != -1)
-//			counters[oldcounterid].removeTracker(trackers[idTracker]);
-//		trackers[idTracker].setCounterId(idCounter);
-//		counters[idCounter].addTracker(trackers[idTracker]);
+void Controller::setTrackerToCounter(CT::Tracker * tr, CT::Counter * ctr){
+	tr->setCounter(ctr);
 }
 
 } /* namespace CT */

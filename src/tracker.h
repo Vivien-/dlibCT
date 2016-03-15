@@ -29,6 +29,7 @@ public:
 	void setCurrent(const dlib::point &p);
 	CT::identifier_t getId() const;
 	double update(dlib::cv_image<dlib::bgr_pixel> & img);
+	void setCounter(CT::Counter * ctr);
 
 private:
 	dlib::correlation_tracker m_tr;

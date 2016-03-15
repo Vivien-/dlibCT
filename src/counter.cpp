@@ -31,7 +31,7 @@ Counter::Counter(CT::Line &l, int id_): m_id(id_) {
 
 
 void Counter::addTracker(CT::Tracker& tracker){
-	trackers.push_back(tracker);
+	m_trackers.push_back(tracker);
 }
 
 
@@ -52,24 +52,24 @@ int Counter::getOut() const{
 
 void Counter::updateSituation() {
 	// Number of object that entered or left the line linked to this Counter instance
-	std::cout<<"nb of tracker in counter "<<m_id<<": "<<trackers.size()<<std::endl;
-	for(uint i = 0; i < trackers.size(); i++){
-		dlib::point c = trackers[i].current();
-		dlib::point init = trackers[i].initial();
-		std::cout<<"["<<__FILE__<<":"<< __LINE__<<" "<<__func__<<"] Initial pos of tracker "<<trackers[i].getId()<<" is "<<init<<std::endl;
+	std::cout<<"nb of tracker in counter "<<m_id<<": "<<m_trackers.size()<<std::endl;
+	for(uint i = 0; i < m_trackers.size(); i++){
+		dlib::point c = m_trackers[i].current();
+		dlib::point init = m_trackers[i].initial();
+		std::cout<<"["<<__FILE__<<":"<< __LINE__<<" "<<__func__<<"] Initial pos of tracker "<<m_trackers[i].getId()<<" is "<<init<<std::endl;
 		if(c.y() >= std::min(m_line.getFirstEndpoint().y(), m_line.getSecondEndpoint().y()) && c.y() <= std::max(m_line.getFirstEndpoint().y(), m_line.getSecondEndpoint().y())) {
 			if(!isInside(init) && isInside(c)) {
 				m_in ++;
-				trackers[i].setInitial(c);
+				m_trackers[i].setInitial(c);
 			}
 			else if(isInside(init) && !isInside(c)) {
 				m_out ++;
-				trackers[i].setInitial(c);
+				m_trackers[i].setInitial(c);
 			}
 			else
 				m_stay ++;
 		}
-		std::cout<<"["<<__FILE__<<":"<< __LINE__<<" in "<<__func__<<"] New set init position of tracker "<<trackers[i].getId()<<" is "<<trackers[i].initial()<<std::endl;
+		std::cout<<"["<<__FILE__<<":"<< __LINE__<<" in "<<__func__<<"] New set init position of tracker "<<m_trackers[i].getId()<<" is "<<m_trackers[i].initial()<<std::endl;
 	}
 }
 
