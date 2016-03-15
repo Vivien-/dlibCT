@@ -104,7 +104,9 @@ int Counter::getCount(){
 	return (m_in - m_out);
 }
 
-
+std::map<CT::identifier_t, int> Counter::getIdTrackers(){
+	return  m_id_trackers;
+}
 
 
 
