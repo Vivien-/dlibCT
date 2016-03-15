@@ -9,11 +9,11 @@
 
 namespace CT {
 
-Line::Line() {
-	m_id = 0;
-	m_a = 0;
-	m_b = 0;
-}
+//Line::Line() {
+//	m_id = 0;
+//	m_a = 0;
+//	m_b = 0;
+//}
 
 Line::Line(dlib::point &p1, dlib::point &p2, CT::identifier_t id_) {
 	m_p1 = p1;

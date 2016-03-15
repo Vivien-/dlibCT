@@ -31,10 +31,9 @@ namespace CT {
 
 class Counter {
 public:
-	Counter();
-
-	virtual ~Counter();
+//	Counter();
 	Counter(CT::identifier_t id);
+	virtual ~Counter();
 	void addTracker(CT::identifier_t tracker);
 	void removeTracker(CT::identifier_t tracker);
 	std::map<CT::identifier_t, int> getIdTrackers();

@@ -19,9 +19,9 @@ namespace CT {
 
 class Line {
 public:
-	Line();
-	virtual ~Line();
+//	Line();
 	Line(dlib::point &p1, dlib::point &p2, CT::identifier_t id_);
+	virtual ~Line();
 	dlib::point getFirstEndpoint(void) const;
 	dlib::point getSecondEndpoint(void) const;
 	CT::identifier_t getId(void) const;

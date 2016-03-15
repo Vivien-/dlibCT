@@ -10,9 +10,11 @@
 
 namespace CT {
 
-Tracker::Tracker(){
+//Tracker::Tracker(){
+//	m_id = -1;
+//	m_ctr = -1;
+//}
 
-}
 Tracker::Tracker(CT::identifier_t id, CT::identifier_t ctr) {
 	m_id = id;
 	m_ctr = ctr;

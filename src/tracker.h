@@ -23,7 +23,7 @@ namespace CT {
 
 class Tracker {
 public:
-	Tracker();
+//	Tracker();
 	Tracker(CT::identifier_t id, CT::identifier_t ctr);
 	virtual ~Tracker();
 	void initTrack(dlib::cv_image<dlib::bgr_pixel> & img, dlib::rectangle & rect);

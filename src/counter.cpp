@@ -11,9 +11,14 @@
 
 namespace CT {
 
-Counter::Counter() {
-
-}
+//Counter::Counter() {
+//	std::cout<<"Counter(): error: should call Counter(CT::identifier_t)"<<std::endl;
+//	m_in = 0;
+//	m_out = 0;
+//	m_stay = 0;
+//	m_id = -1;
+//	m_id_line = -1;
+//}
 
 Counter::Counter(CT::identifier_t id) {
 	// Computes the slope and coordinate at origin of the line
@@ -38,7 +43,6 @@ void Counter::addTracker(CT::identifier_t tracker){
 	m_id_trackers.insert(std::make_pair(tracker,tracker));
 }
 
-
 void Counter::removeTracker(CT::identifier_t tracker){
 	//return tracker position in trackers
 	//trackers.erase(trackers.begin()+ position);
@@ -49,42 +53,9 @@ int Counter::getIn() const{
 	return m_in;
 }
 
-
 int Counter::getOut() const{
 	return m_out;
 }
-
-//void Counter::updateSituation() {
-	// Number of object that entered or left the line linked to this Counter instance
-	/*std::cout<<"nb of tracker in counter "<<m_id<<": "<<m_trackers.size()<<std::endl;
-	for(uint i = 0; i < m_id_trackers.size(); i++){
-		dlib::point c = m_id_trackers[i].current();
-		dlib::point init = m_trackers[i].initial();
-		std::cout<<"Init: isInside("<<i<<"): "<<isInside(init)<<"\n Current: isInside("<<c<<") "<<isInside(c)<<std::endl;
-		if(c.y() >= std::min(m_line.getFirstEndpoint().y(), m_line.getSecondEndpoint().y()) && c.y() <= std::max(m_line.getFirstEndpoint().y(), m_line.getSecondEndpoint().y())) {
-			if(!isInside(init) && isInside(c)) {
-				m_in ++;
-				m_trackers[i].setInitial(c);
-			}
-			else if(isInside(init) && !isInside(c)) {
-				m_out ++;
-				m_trackers[i].setInitial(c);
-			}
-			else {
-				std::cout<<"Staying in here yo"<<std::endl;
-				m_stay ++;
-			}
-		}
-	}*/
-//}
-
-//bool Counter::isInside(const dlib::point& c) const {
-//	if(m_a > 0)
-//		return (m_a*c.x() - c.y() + m_b > 0);
-//	else
-//		return (m_a*c.x() - c.y() + m_b < 0);
-//}
-
 
 CT::identifier_t Counter::getId() const{
 	return m_id;
@@ -107,7 +78,5 @@ int Counter::getCount(){
 std::map<CT::identifier_t, int> Counter::getIdTrackers(){
 	return  m_id_trackers;
 }
-
-
 
 } // Namespace CT

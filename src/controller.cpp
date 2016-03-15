@@ -25,8 +25,8 @@ void Controller::process(std::vector<dlib::rectangle> & curObjDetected, dlib::cv
 		dlib::rectangle face = curObjDetected[i];
 		bool alreadytracked = false;
 		// We check that the detected object is not tracked yey
-		for(uint j = 0; j < trackers.size(); j++) {
-			if(face.contains(dlib::center(trackers[j].getTracker().get_position())) || trackers[j].getTracker().get_position().contains(dlib::center(face))) {
+		for(auto it = trackers.begin(); it != trackers.end(); ++it) {
+			if(face.contains(dlib::center(trackers.find(it->first)->second.getTracker().get_position())) || trackers.find(it->first)->second.getTracker().get_position().contains(dlib::center(face))) {
 				alreadytracked = true;
 				break;
 			}
@@ -43,13 +43,14 @@ void Controller::process(std::vector<dlib::rectangle> & curObjDetected, dlib::cv
 
 void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 	// Each object tracked has its position updated
-	for(uint i = 0; i < trackers.size(); ++i) {
+	for(auto it = trackers.begin(); it != trackers.end(); ) {
 		// Confidence that the area covored by the tracker looks like the initial tracked object
-		double confidence = trackers[i].update(cimg);
+		double confidence = trackers.find(it->first)->second.update(cimg);
 		// If the confidence is under a certain threshold, this tracker can be removed (the object probably disappeared frome the image)
 		if(confidence < m_threshold){
-			trackers.erase(trackers[i].getId());
-		}
+			trackers.erase(trackers.find((it++)->first)->second.getId());
+		} else
+			++it;
 	}
 }
 
@@ -57,8 +58,9 @@ void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel
 	win.clear_overlay();
 	win.set_image(cimg);
 	// Create a circle of radius 5 on th center of the tracked object
-	for(uint i = 0; i < trackers.size(); i++)
-		win.add_overlay(dlib::image_window::overlay_circle(dlib::center(trackers[i].getTracker().get_position()), 5, dlib::rgb_pixel(0,255,0), boost::lexical_cast<std::string>(i)));
+	int i = 0;
+	for(auto it = trackers.begin(); it != trackers.end(); ++it)
+		win.add_overlay(dlib::image_window::overlay_circle(dlib::center(trackers.find(it->first)->second.getTracker().get_position()), 5, dlib::rgb_pixel(0,255,0), boost::lexical_cast<std::string>(i++)));
 }
 
 void Controller::addLine(dlib::point &p1, dlib::point &p2) {
@@ -78,11 +80,11 @@ void Controller::updateCountersSituation() {
 	}
 	// Count the number of object entering/leaving a line (i.e. a counter)
 	for(auto it = counters.begin(); it != counters.end(); ++it) {
-		CT::Line current_line = lines[it->first];
-		CT::Counter current_counter = counters[it->first];
+		CT::Line current_line = lines.find(it->first)->second;
+		CT::Counter current_counter = counters.find(it->first)->second;
 		std::map<CT::identifier_t, int> id_trackers = current_counter.getIdTrackers();
 		for(auto that_id = id_trackers.begin(); that_id != id_trackers.end(); ++that_id) {
-			CT::Tracker that_tracker = trackers[that_id->first];
+			CT::Tracker that_tracker = trackers.find(that_id->first)->second;
 			dlib::point initial = that_tracker.initial();
 			dlib::point current = that_tracker.current();
 			if(current.y() >= std::min(current_line.getFirstEndpoint().y(),
@@ -108,17 +110,18 @@ void Controller::updateCountersSituation() {
 }
 
 void Controller::setTrackerToCounter(CT::identifier_t tr, CT::identifier_t ctr){
-	trackers[tr].setCounter(ctr);
-	counters[ctr].addTracker(tr);
+	trackers.find(tr)->second.setCounter(ctr);
+	counters.find(ctr)->second.addTracker(tr);
 }
 
 void Controller::printSituation() {
 	if(lines.size()) {
 		updateCountersSituation();
+		std::cout<<"number of counter: "<<counters.size()<<std::endl;
 		for(auto it = counters.begin(); it != counters.end(); ++it) {
 			int entered = it->second.getIn();
 			int left = it->second.getOut();
-			std::cout<<"entered: "<<entered<<" left: "<<left<<std::endl;
+			std::cout<<"Counters id "<<it->first<<" entered: "<<entered<<" left: "<<left<<std::endl;
 		}
 	}
 }

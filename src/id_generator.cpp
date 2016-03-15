@@ -11,7 +11,7 @@ namespace CT{
 IDGenerator * IDGenerator::only_copy = nullptr;
 
 IDGenerator & IDGenerator::instance () {
-   if (only_copy != nullptr) {
+   if (only_copy == nullptr) {
 	   only_copy = new IDGenerator();
    }
    return *only_copy;
