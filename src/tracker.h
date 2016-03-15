@@ -24,6 +24,7 @@ namespace CT {
 class Tracker {
 public:
 	Tracker();
+	Tracker(identifier_t & id, identifier_t & ctr);
 	virtual ~Tracker();
 	void initTrack(dlib::cv_image<dlib::bgr_pixel> & img, dlib::rectangle & rect);
 	dlib::point initial() const;
@@ -33,13 +34,13 @@ public:
 	void setCurrent(const dlib::point &p);
 	CT::identifier_t getId() const;
 	double update(dlib::cv_image<dlib::bgr_pixel> & img);
-	void setCounter(CT::Counter & ctr);
+	void setCounter(CT::identifier_t & ctr);
 
 
 private:
 	dlib::correlation_tracker m_tr;
 	CT::identifier_t m_id;
-	CT::Counter* m_ctr;
+	CT::identifier_t m_ctr;
 	dlib::point m_current;
 	dlib::point m_initial;
 };
