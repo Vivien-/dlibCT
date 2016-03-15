@@ -6,13 +6,13 @@
  */
 
 #include "controller.h"
+#include "id_generator.h"
 #include <boost/lexical_cast.hpp>
 
 namespace CT {
 
 Controller::Controller() {
 	m_threshold = 10.0;
-	next_id = 0;
 }
 
 Controller::~Controller() {
@@ -33,9 +33,10 @@ void Controller::process(std::vector<dlib::rectangle> & curObjDetected, dlib::cv
 		}
 		// If the object was not detected yet we initialise a tracker on the object position
 		if(!alreadytracked) {
-			CT::Tracker tracker();
+			dlib::point p = dlib::center(face);
+			CT::Tracker tracker(IDGenerator::instance().next(), getBestLine(p));
 			tracker.initTrack(cimg,face);
-			trackers.push_back(tracker);
+			trackers.insert(std::make_pair(tracker.getId(), tracker));
 		}
 	}
 }
@@ -47,7 +48,7 @@ void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 		double confidence = trackers[i].update(cimg);
 		// If the confidence is under a certain threshold, this tracker can be removed (the object probably disappeared frome the image)
 		if(confidence < m_threshold){
-			trackers.erase(trackers.begin() + i);
+			trackers.erase(trackers[i].getId());
 		}
 	}
 }
@@ -61,16 +62,19 @@ void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel
 }
 
 void Controller::addLine(dlib::point &p1, dlib::point &p2) {
+	CT::identifier_t next_id = IDGenerator::instance().next();
 	CT::Line l = CT::Line(p1, p2, next_id);
 	CT::Counter c(next_id);
-	lines.insert(next_id, l);
-	counters.insert(next_id, c);
+	lines.insert(std::make_pair(next_id, l));
+	counters.insert(std::make_pair(next_id, c));
 	next_id++;
 }
 
 void Controller::updateCountersSituation() {
 	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
-		setTrackerToCounter(it->second, counters[0]);
+		dlib::point p = it->second.current();
+		CT::identifier_t best_counter_id = getBestLine(p);
+		setTrackerToCounter(it->first, best_counter_id);
 	}
 	// Count the number of object entering/leaving a line (i.e. a counter)
 	for(auto it = counters.begin(); it != counters.end(); ++it) {
@@ -119,5 +123,8 @@ void Controller::printSituation() {
 	}
 }
 
+CT::identifier_t Controller::getBestLine(dlib::point &p) {
+	return 0;
+}
 
 } /* namespace CT */

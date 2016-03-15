@@ -12,7 +12,7 @@ namespace CT{
 
 class IDGenerator {
 public:
-      static IDGenerator * instance ();
+      static IDGenerator & instance ();
       CT::identifier_t next () { return _id++; }
 private:
       IDGenerator () : _id(0) {}

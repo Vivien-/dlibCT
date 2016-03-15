@@ -34,9 +34,9 @@ public:
 	Counter();
 
 	virtual ~Counter();
-	Counter(CT::identifier_t id, CT::identifier_t &l);
-	void addTracker(CT::identifier_t & tracker);
-	void removeTracker(CT::identifier_t & tracker);
+	Counter(CT::identifier_t id);
+	void addTracker(CT::identifier_t tracker);
+	void removeTracker(CT::identifier_t tracker);
 	std::map<CT::identifier_t, int> getIdTrackers();
 	int getIn() const;
 	int getOut() const;
@@ -45,10 +45,10 @@ public:
 	int getCount();
 	//void updateSituation();
 	CT::identifier_t getId() const;
-	void setLine(CT::identifier_t &l);
+	void setLine(CT::identifier_t l);
 
 private:
-	std::map<CT::identifier_t,int> m_id_trackers;
+	std::map<CT::identifier_t, CT::identifier_t> m_id_trackers;
 	CT::identifier_t m_id;
 	CT::identifier_t m_id_line;
 	int m_in, m_out, m_stay;

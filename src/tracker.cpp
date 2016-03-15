@@ -13,7 +13,7 @@ namespace CT {
 Tracker::Tracker(){
 
 }
-Tracker::Tracker(identifier_t & id, identifier_t & ctr) {
+Tracker::Tracker(CT::identifier_t id, CT::identifier_t ctr) {
 	m_id = id;
 	m_ctr = ctr;
 }
@@ -57,7 +57,7 @@ dlib::correlation_tracker Tracker::getTracker(){
 	return m_tr;
 }
 
-void Tracker::setCounter(CT::identifier_t & ctr) {
+void Tracker::setCounter(CT::identifier_t ctr) {
 	m_ctr = ctr;
 }
 

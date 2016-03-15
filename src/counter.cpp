@@ -15,10 +15,10 @@ Counter::Counter() {
 
 }
 
-Counter::Counter(CT::identifier_t id, CT::identifier_t &l) {
+Counter::Counter(CT::identifier_t id) {
 	// Computes the slope and coordinate at origin of the line
 	m_id = id;
-	m_id_line = l;
+	m_id_line = id;
 	//m_a = (m_line.getFirstEndpoint().y() - m_line.getSecondEndpoint().y())/(m_line.getFirstEndpoint().x() - m_line.getSecondEndpoint().x());
 	//m_b = m_line.getFirstEndpoint().y() - m_a*m_line.getFirstEndpoint().x();
 	m_in = 0;
@@ -30,16 +30,16 @@ Counter::~Counter() {
 	std::cout<<"~Counter()"<<std::endl;
 }
 
-void Counter::addTracker(CT::identifier_t& tracker){
+void Counter::addTracker(CT::identifier_t tracker){
 	for(uint i = 0; i < m_id_trackers.size(); ++i) {
 		if(m_id_trackers[i] == tracker)
 			return ;
 	}
-	m_id_trackers.insert(tracker,tracker);
+	m_id_trackers.insert(std::make_pair(tracker,tracker));
 }
 
 
-void Counter::removeTracker(CT::identifier_t & tracker){
+void Counter::removeTracker(CT::identifier_t tracker){
 	//return tracker position in trackers
 	//trackers.erase(trackers.begin()+ position);
 	m_id_trackers.erase(tracker);
@@ -90,7 +90,7 @@ CT::identifier_t Counter::getId() const{
 	return m_id;
 }
 
-void Counter::setLine(CT::identifier_t &l) {
+void Counter::setLine(CT::identifier_t l) {
 	m_id_line = l;
 }
 

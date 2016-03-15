@@ -41,9 +41,11 @@ public:
 	void printSituation();
 
 private:
+	// Return the best line (closest ?) to the object
+	CT::identifier_t getBestLine(dlib::point &p);
 	std::map<CT::identifier_t, CT::Tracker> trackers;
 	// Next id is used to determinate the next line id and counter id (which are the same)
-	CT::identifier_t next_id;
+	//CT::identifier_t next_id;
 	std::map<CT::identifier_t, CT::Counter> counters;
 	std::map<CT::identifier_t, CT::Line> lines;
 	// Threshold value of wether we keep a tracker or remove it (depending of the confidence of the tracker)
