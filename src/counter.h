@@ -37,6 +37,7 @@ public:
 	Counter(CT::identifier_t id, CT::identifier_t &l);
 	void addTracker(CT::identifier_t & tracker);
 	void removeTracker(CT::identifier_t & tracker);
+	std::map getIdTrackers();
 	int getIn() const;
 	int getOut() const;
 	void incrIn();
