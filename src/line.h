@@ -21,16 +21,21 @@ class Line {
 public:
 	Line();
 	virtual ~Line();
-	Line(dlib::point &a, dlib::point &b, CT::identifier_t id_);
+	Line(dlib::point &p1, dlib::point &p2, CT::identifier_t id_);
 	dlib::point getFirstEndpoint(void) const;
 	dlib::point getSecondEndpoint(void) const;
 	CT::identifier_t getId(void) const;
 	void setFirstEndpoint(int _x, int _y);
 	void setSecondEndpoint(int _x, int _y);
+	float getSlope(void);
+	float getYIntercept(void);
+	bool isInside(const dlib::point& p) const;
 
 private:
 	dlib::point m_p1;
 	dlib::point m_p2;
+	float m_a;
+	float m_b;
 	CT::identifier_t m_id;
 };
 

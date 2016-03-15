@@ -62,8 +62,7 @@ void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel
 
 void Controller::addLine(dlib::point &p1, dlib::point &p2) {
 	CT::Line l = CT::Line(p1, p2, next_id);
-	CT::Counter c(l, next_id);
-	c.setLine(l);
+	CT::Counter c(next_id);
 	lines.push_back(l);
 	counters.push_back(c);
 	next_id++;
