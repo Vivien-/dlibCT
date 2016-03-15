@@ -33,7 +33,7 @@ void Controller::process(std::vector<dlib::rectangle> & curObjDetected, dlib::cv
 		}
 		// If the object was not detected yet we initialise a tracker on the object position
 		if(!alreadytracked) {
-			CT::Tracker tracker;
+			CT::Tracker tracker();
 			tracker.initTrack(cimg,face);
 			trackers.push_back(tracker);
 		}
@@ -63,31 +63,57 @@ void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel
 void Controller::addLine(dlib::point &p1, dlib::point &p2) {
 	CT::Line l = CT::Line(p1, p2, next_id);
 	CT::Counter c(next_id);
-	lines.push_back(l);
-	counters.push_back(c);
+	lines.insert(next_id, l);
+	counters.insert(next_id, c);
 	next_id++;
 }
 
 void Controller::updateCountersSituation() {
 	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
-		setTrackerToCounter(*it, counters[0]);
+		setTrackerToCounter(it->second, counters[0]);
 	}
 	// Count the number of object entering/leaving a line (i.e. a counter)
-	for(auto it = counters.begin(); it != counters.end(); ++it)
-		it->updateSituation();
+	for(auto it = counters.begin(); it != counters.end(); ++it) {
+		CT::Line current_line = lines[it->first];
+		CT::Counter current_counter = counters[it->first];
+		std::map<CT::identifier_t, int> id_trackers = current_counter.getIdTrackers();
+		for(auto that_id = id_trackers.begin(); that_id != id_trackers.end(); ++that_id) {
+			CT::Tracker that_tracker = trackers[that_id->first];
+			dlib::point initial = that_tracker.initial();
+			dlib::point current = that_tracker.current();
+			if(current.y() >= std::min(current_line.getFirstEndpoint().y(),
+										current_line.getSecondEndpoint().y())
+			&& current.y() <= std::max(current_line.getFirstEndpoint().y(),
+										current_line.getSecondEndpoint().y())) {
+
+				if(!(current_line.isInside(initial)) && current_line.isInside(current)) {
+					current_counter.incrIn();
+					that_tracker.setInitial(current);
+				}
+				else if(current_line.isInside(initial) && !(current_line.isInside(current)) ) {
+					current_counter.incrOut();
+					that_tracker.setInitial(current);
+				}
+				else {
+					std::cout<<"Staying in here yo"<<std::endl;
+//					m_stay ++;
+				}
+			}
+		}
+	}
 }
 
-void Controller::setTrackerToCounter(CT::Tracker& tr, CT::Counter& ctr){
-	tr.setCounter(ctr);
-	ctr.addTracker(tr);
+void Controller::setTrackerToCounter(CT::identifier_t tr, CT::identifier_t ctr){
+	trackers[tr].setCounter(ctr);
+	counters[ctr].addTracker(tr);
 }
 
 void Controller::printSituation() {
 	if(lines.size()) {
 		updateCountersSituation();
 		for(auto it = counters.begin(); it != counters.end(); ++it) {
-			int entered = it->getIn();
-			int left = it->getOut();
+			int entered = it->second.getIn();
+			int left = it->second.getOut();
 			std::cout<<"entered: "<<entered<<" left: "<<left<<std::endl;
 		}
 	}

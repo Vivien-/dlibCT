@@ -36,16 +36,16 @@ public:
 	// For each line, update the number of tracker that entered or left that line
 	void updateCountersSituation();
 	// Attach a tracker to a counter (a counter own multiple trackers)
-	void setTrackerToCounter(CT::Tracker& tr, CT::Counter& ctr);
+	void setTrackerToCounter(const CT::identifier_t tr, const CT::identifier_t ctr);
 	// debug
 	void printSituation();
 
 private:
-	std::vector<CT::Tracker> trackers;
+	std::map<CT::identifier_t, CT::Tracker> trackers;
 	// Next id is used to determinate the next line id and counter id (which are the same)
 	CT::identifier_t next_id;
-	std::vector<CT::Counter> counters;
-	std::vector<CT::Line> lines;
+	std::map<CT::identifier_t, CT::Counter> counters;
+	std::map<CT::identifier_t, CT::Line> lines;
 	// Threshold value of wether we keep a tracker or remove it (depending of the confidence of the tracker)
  	double m_threshold;
 };
