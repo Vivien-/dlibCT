@@ -24,7 +24,7 @@ Line::Line(dlib::point &p1, dlib::point &p2, CT::identifier_t id_) {
 }
 
 Line::~Line() {
-	// TODO Auto-generated destructor stub
+	std::cout<<"~Line()"<<std::endl;
 }
 
 dlib::point Line::getFirstEndpoint(void) const{

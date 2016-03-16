@@ -80,13 +80,15 @@ void Controller::updateCountersSituation() {
 	}
 	// Count the number of object entering/leaving a line (i.e. a counter)
 	for(auto it = counters.begin(); it != counters.end(); ++it) {
-		CT::Line current_line = lines.find(it->first)->second;
-		CT::Counter current_counter = counters.find(it->first)->second;
+		CT::Line &current_line = lines.at(it->first);
+		CT::Counter &current_counter = it->second;
 		std::map<CT::identifier_t, int> id_trackers = current_counter.getIdTrackers();
+		std::cout<<"id_trackers.size(): "<<id_trackers.size()<<std::endl;
 		for(auto that_id = id_trackers.begin(); that_id != id_trackers.end(); ++that_id) {
-			CT::Tracker that_tracker = trackers.find(that_id->first)->second;
+			CT::Tracker &that_tracker = trackers.at(that_id->first);
 			dlib::point initial = that_tracker.initial();
 			dlib::point current = that_tracker.current();
+			std::cout<<"Initial point: "<<current_line.isInside(initial)<<"\nCurrent point: "<<current_line.isInside(current)<<std::endl;
 			if(current.y() >= std::min(current_line.getFirstEndpoint().y(),
 										current_line.getSecondEndpoint().y())
 			&& current.y() <= std::max(current_line.getFirstEndpoint().y(),
@@ -117,7 +119,7 @@ void Controller::setTrackerToCounter(CT::identifier_t tr, CT::identifier_t ctr){
 void Controller::printSituation() {
 	if(lines.size()) {
 		updateCountersSituation();
-		std::cout<<"number of counter: "<<counters.size()<<std::endl;
+//		std::cout<<"number of counter: "<<counters.size()<<std::endl;
 		for(auto it = counters.begin(); it != counters.end(); ++it) {
 			int entered = counters.find(it->first)->second.getIn();//it->second.getIn();
 			int left = counters.find(it->first)->second.getOut();  //it->second.getOut();
@@ -127,7 +129,7 @@ void Controller::printSituation() {
 }
 
 CT::identifier_t Controller::getBestLine(dlib::point &p) {
-	return 0;
+	return 1;
 }
 
 } /* namespace CT */
