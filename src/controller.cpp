@@ -48,6 +48,8 @@ void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 		double confidence = trackers.find(it->first)->second.update(cimg);
 		// If the confidence is under a certain threshold, this tracker can be removed (the object probably disappeared frome the image)
 		if(confidence < m_threshold){
+			CT::Counter & counter = counters.find(trackers.find((it)->first)->second.getId())->second;
+			counter.removeTracker(it->first);
 			trackers.erase(trackers.find((it++)->first)->second.getId());
 		} else
 			++it;
@@ -60,7 +62,7 @@ void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel
 	// Create a circle of radius 5 on th center of the tracked object
 	int i = 0;
 	for(auto it = trackers.begin(); it != trackers.end(); ++it)
-		win.add_overlay(dlib::image_window::overlay_circle(dlib::center(trackers.find(it->first)->second.getTracker().get_position()), 5, dlib::rgb_pixel(0,255,0), boost::lexical_cast<std::string>(i++)));
+		win.add_overlay(dlib::image_window::overlay_circle(dlib::center(trackers.find(it->first)->second.getTracker().get_position()), 5, dlib::rgb_pixel(0,255,0), boost::lexical_cast<std::string>(trackers.find(it->first)->second.getId())));
 }
 
 void Controller::addLine(dlib::point &p1, dlib::point &p2) {
@@ -72,43 +74,51 @@ void Controller::addLine(dlib::point &p1, dlib::point &p2) {
 	next_id++;
 }
 
-void Controller::updateCountersSituation() {
-	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
-		dlib::point p = trackers.find(it->first)->second.current();//it->second.current();
-		CT::identifier_t best_counter_id = getBestLine(p);
-		setTrackerToCounter(it->first, best_counter_id);
-	}
-	// Count the number of object entering/leaving a line (i.e. a counter)
-	for(auto it = counters.begin(); it != counters.end(); ++it) {
-		CT::Line &current_line = lines.at(it->first);
-		CT::Counter &current_counter = it->second;
-		std::map<CT::identifier_t, int> id_trackers = current_counter.getIdTrackers();
-		std::cout<<"id_trackers.size(): "<<id_trackers.size()<<std::endl;
-		for(auto that_id = id_trackers.begin(); that_id != id_trackers.end(); ++that_id) {
-			CT::Tracker &that_tracker = trackers.at(that_id->first);
-			dlib::point initial = that_tracker.initial();
-			dlib::point current = that_tracker.current();
-			std::cout<<"Initial point: "<<current_line.isInside(initial)<<"\nCurrent point: "<<current_line.isInside(current)<<std::endl;
-			if(current.y() >= std::min(current_line.getFirstEndpoint().y(),
-										current_line.getSecondEndpoint().y())
-			&& current.y() <= std::max(current_line.getFirstEndpoint().y(),
-										current_line.getSecondEndpoint().y())) {
 
-				if(!(current_line.isInside(initial)) && current_line.isInside(current)) {
-					current_counter.incrIn();
-					that_tracker.setInitial(current);
-				}
-				else if(current_line.isInside(initial) && !(current_line.isInside(current)) ) {
-					current_counter.incrOut();
-					that_tracker.setInitial(current);
-				}
-				else {
-					std::cout<<"Staying in here yo"<<std::endl;
-//					m_stay ++;
+void Controller::setTrackersToCounters(){
+	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
+			dlib::point p = trackers.find(it->first)->second.current();//it->second.current();
+			CT::identifier_t best_counter_id = getBestLine(p);
+			setTrackerToCounter(it->first, best_counter_id);
+		}
+}
+
+void Controller::updateCounters(){
+	for(auto it = counters.begin(); it != counters.end(); ++it) {
+			CT::Line &current_line = lines.find(it->first)->second;
+			CT::Counter &current_counter = it->second;
+			std::map<CT::identifier_t, int> id_trackers = current_counter.getIdTrackers();
+			std::cout<<"id_trackers.size(): "<<id_trackers.size()<<std::endl;
+			for(auto that_id = id_trackers.begin(); that_id != id_trackers.end(); ++that_id) {
+				CT::Tracker &that_tracker = trackers.find(that_id->first)->second;
+				dlib::point initial = that_tracker.initial();
+				dlib::point current = that_tracker.current();
+				std::cout<<"Initial point: "<<current_line.isInside(initial)<<"\nCurrent point: "<<current_line.isInside(current)<<std::endl;
+				if(current.y() >= std::min(current_line.getFirstEndpoint().y(),
+											current_line.getSecondEndpoint().y())
+				&& current.y() <= std::max(current_line.getFirstEndpoint().y(),
+											current_line.getSecondEndpoint().y())) {
+
+					if(!(current_line.isInside(initial)) && current_line.isInside(current)) {
+						current_counter.incrIn();
+						that_tracker.setInitial(current);
+					}
+					else if(current_line.isInside(initial) && !(current_line.isInside(current)) ) {
+						current_counter.incrOut();
+						that_tracker.setInitial(current);
+					}
+					else {
+						std::cout<<"Staying in here yo"<<std::endl;
+	//					m_stay ++;
+					}
 				}
 			}
 		}
-	}
+}
+
+void Controller::updateCountersSituation() {
+	setTrackersToCounters();
+	updateCounters();
 }
 
 void Controller::setTrackerToCounter(CT::identifier_t tr, CT::identifier_t ctr){
@@ -118,15 +128,17 @@ void Controller::setTrackerToCounter(CT::identifier_t tr, CT::identifier_t ctr){
 
 void Controller::printSituation() {
 	if(lines.size()) {
-		updateCountersSituation();
-//		std::cout<<"number of counter: "<<counters.size()<<std::endl;
+		std::cout<<"number of counter: "<<counters.size()<<std::endl;
 		for(auto it = counters.begin(); it != counters.end(); ++it) {
+
 			int entered = counters.find(it->first)->second.getIn();//it->second.getIn();
 			int left = counters.find(it->first)->second.getOut();  //it->second.getOut();
 			std::cout<<"Counters id "<<it->first<<" entered: "<<entered<<" left: "<<left<<std::endl;
 		}
 	}
 }
+
+
 
 CT::identifier_t Controller::getBestLine(dlib::point &p) {
 	return 1;

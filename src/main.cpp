@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
 				win.get_next_double_click(p2);
 				controller.addLine(p1,p2);
 			}
-			controller.printSituation(); //TODO MAKE IT WORK THERE IS A SEGFAULT WHEN DETECTED A NEW FACE AFTER A DELETION
+			controller.updateCountersSituation();
 		}
 	} catch(dlib::serialization_error& e)	{
 		std::cout << "You need dlib's default face landmarking model file to run this example." << std::endl;

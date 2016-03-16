@@ -50,6 +50,8 @@ private:
 	std::map<CT::identifier_t, CT::Line> lines;
 	// Threshold value of wether we keep a tracker or remove it (depending of the confidence of the tracker)
  	double m_threshold;
+ 	void setTrackersToCounters();
+ 	void updateCounters();
 };
 
 } /* namespace CT */
