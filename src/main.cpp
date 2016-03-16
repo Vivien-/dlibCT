@@ -28,36 +28,27 @@ int main(int argc, char* argv[]) {
 			cv::Mat temp;
 			cap >> temp;
 
-
 			// Turn OpenCV's Mat into something dlib can deal with. don't modify temp while using cimg.
 			dlib::cv_image<dlib::bgr_pixel> cimg(temp);
 
 			// Detect faces
 			if(nfrm++ % 100 == 0) {
-				printf("entered if\n");
 				std::vector<dlib::rectangle> faces = d(cimg);
-				printf("detected\n");
 				controller.process(faces, cimg);
-				printf("process\n");
 			}
 
 			//update tracker
-			printf("before update\n");
 			controller.update(cimg);
-			printf("update\n");
 			//display line
 			dlib::draw_line(cimg, p1, p2, dlib::rgb_pixel(0,0,255));
-			printf("draw line\n");
 			//display tracked object
 			controller.display(win, cimg);
-			printf("display\n");
 			if(nfrm == 1) {
 				win.get_next_double_click(p1);
 				win.get_next_double_click(p2);
 				controller.addLine(p1,p2);
 			}
-			//controller.printSituation(); TODO MAKE IT WORK THERE IS A SEGFAULT WHEN DETECTED A NEW FACE AFTER A DELETION
-			printf("print situation\n");
+			controller.printSituation(); //TODO MAKE IT WORK THERE IS A SEGFAULT WHEN DETECTED A NEW FACE AFTER A DELETION
 		}
 	} catch(dlib::serialization_error& e)	{
 		std::cout << "You need dlib's default face landmarking model file to run this example." << std::endl;

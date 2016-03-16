@@ -74,7 +74,7 @@ void Controller::addLine(dlib::point &p1, dlib::point &p2) {
 
 void Controller::updateCountersSituation() {
 	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
-		dlib::point p = it->second.current();
+		dlib::point p = trackers.find(it->first)->second.current();//it->second.current();
 		CT::identifier_t best_counter_id = getBestLine(p);
 		setTrackerToCounter(it->first, best_counter_id);
 	}
@@ -119,8 +119,8 @@ void Controller::printSituation() {
 		updateCountersSituation();
 		std::cout<<"number of counter: "<<counters.size()<<std::endl;
 		for(auto it = counters.begin(); it != counters.end(); ++it) {
-			int entered = it->second.getIn();
-			int left = it->second.getOut();
+			int entered = counters.find(it->first)->second.getIn();//it->second.getIn();
+			int left = counters.find(it->first)->second.getOut();  //it->second.getOut();
 			std::cout<<"Counters id "<<it->first<<" entered: "<<entered<<" left: "<<left<<std::endl;
 		}
 	}
