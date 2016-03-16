@@ -93,8 +93,15 @@ void Controller::updateCounters(){
 				CT::Tracker &that_tracker = trackers.find(that_id->first)->second;
 				dlib::point initial = that_tracker.initial();
 				dlib::point current = that_tracker.current();
-				std::cout<<"Initial point: "<<current_line.isInside(initial)<<"\nCurrent point: "<<current_line.isInside(current)<<std::endl;
-				if(current.y() >= std::min(current_line.getFirstEndpoint().y(),
+				if(current_line.position(initial) == true && current_line.position(current) == false){
+					current_counter.incrOut();
+					that_tracker.setInitial(current);
+				}
+				else if(current_line.position(initial) == false && current_line.position(current) == true){
+					current_counter.incrIn();
+					that_tracker.setInitial(current);
+				}
+				/*if(current.y() >= std::min(current_line.getFirstEndpoint().y(),
 											current_line.getSecondEndpoint().y())
 				&& current.y() <= std::max(current_line.getFirstEndpoint().y(),
 											current_line.getSecondEndpoint().y())) {
@@ -109,10 +116,10 @@ void Controller::updateCounters(){
 					}
 					else {
 						std::cout<<"Staying in here yo"<<std::endl;
-	//					m_stay ++;
+						m_stay ++;
 					}
 				}
-			}
+*/			}
 		}
 }
 

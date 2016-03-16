@@ -30,6 +30,7 @@ public:
 	float getSlope(void);
 	float getYIntercept(void);
 	bool isInside(const dlib::point& p) const;
+	bool position(dlib::point other);
 
 private:
 	dlib::point m_p1;
