@@ -35,6 +35,7 @@ public:
 	CT::identifier_t getId() const;
 	double update(dlib::cv_image<dlib::bgr_pixel> & img);
 	void setCounter(CT::identifier_t ctr);
+	CT::identifier_t getCounter();
 
 
 private:

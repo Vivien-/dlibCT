@@ -49,6 +49,7 @@ int main(int argc, char* argv[]) {
 				controller.addLine(p1,p2);
 			}
 			controller.updateCountersSituation();
+			controller.printSituation();
 		}
 	} catch(dlib::serialization_error& e)	{
 		std::cout << "You need dlib's default face landmarking model file to run this example." << std::endl;

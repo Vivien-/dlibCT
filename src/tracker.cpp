@@ -63,4 +63,8 @@ void Tracker::setCounter(CT::identifier_t ctr) {
 	m_ctr = ctr;
 }
 
+CT::identifier_t Tracker::getCounter(){
+	return m_ctr;
+}
+
 } /* namespace CT */

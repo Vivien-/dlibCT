@@ -48,7 +48,7 @@ void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 		double confidence = trackers.find(it->first)->second.update(cimg);
 		// If the confidence is under a certain threshold, this tracker can be removed (the object probably disappeared frome the image)
 		if(confidence < m_threshold){
-			CT::Counter & counter = counters.find(trackers.find((it)->first)->second.getId())->second;
+			CT::Counter & counter = counters.find(trackers.find((it)->first)->second.getCounter())->second;
 			counter.removeTracker(it->first);
 			trackers.erase(trackers.find((it++)->first)->second.getId());
 		} else
