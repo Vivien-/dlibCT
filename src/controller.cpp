@@ -101,25 +101,7 @@ void Controller::updateCounters(){
 					current_counter.incrIn();
 					that_tracker.setInitial(current);
 				}
-				/*if(current.y() >= std::min(current_line.getFirstEndpoint().y(),
-											current_line.getSecondEndpoint().y())
-				&& current.y() <= std::max(current_line.getFirstEndpoint().y(),
-											current_line.getSecondEndpoint().y())) {
-
-					if(!(current_line.isInside(initial)) && current_line.isInside(current)) {
-						current_counter.incrIn();
-						that_tracker.setInitial(current);
-					}
-					else if(current_line.isInside(initial) && !(current_line.isInside(current)) ) {
-						current_counter.incrOut();
-						that_tracker.setInitial(current);
-					}
-					else {
-						std::cout<<"Staying in here yo"<<std::endl;
-						m_stay ++;
-					}
-				}
-*/			}
+			}
 		}
 }
 
@@ -147,8 +129,19 @@ void Controller::printSituation() {
 
 
 
-CT::identifier_t Controller::getBestLine(dlib::point &p) {
-	return 1;
+CT::identifier_t Controller::getBestLine(dlib::point p) {
+	double distance = std::numeric_limits<double>::max();
+	CT::identifier_t id = -1;
+	for(auto it = lines.begin(); it!=lines.end(); ++it){
+		CT::Line & current_line = it->second;
+		double current_distance = current_line.distance(p);
+		if( current_distance < distance){
+			distance = current_distance;
+			id = current_line.getId();
+		}
+	}
+	if(id != -1)
+		return id;
 }
 
 } /* namespace CT */

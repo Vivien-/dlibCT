@@ -62,12 +62,16 @@ bool Line::isInside(const dlib::point& p) const {
 		return (m_a*p.x() - p.y() + m_b < 0);
 }
 
-bool Line::position(dlib::point other){
+bool Line::position(dlib::point & other){
 	if(m_a > 0)
 		return (m_p2.x() - m_p1.x()) * (other.y() - m_p1.y()) - (m_p2.y() - m_p1.y()) * (other.x() - m_p1.x()) < 0;
 	else
 		return (m_p2.x() - m_p1.x()) * (other.y() - m_p1.y()) - (m_p2.y() - m_p1.y()) * (other.x() - m_p1.x()) > 0;
 }
 
+
+double Line::distance(dlib::point & other){
+	return std::fabs(-m_a*other.x() + other.y() - m_b)/std::sqrt(1 + m_a*m_a);
+}
 
 } // Namespace CT

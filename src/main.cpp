@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 			dlib::cv_image<dlib::bgr_pixel> cimg(temp);
 
 			// Detect faces
-			if(nfrm++ % 100 == 0) {
+			if(nfrm++ % 20 == 0) {
 				std::vector<dlib::rectangle> faces = d(cimg);
 				controller.process(faces, cimg);
 			}
@@ -51,6 +51,7 @@ int main(int argc, char* argv[]) {
 			controller.updateCountersSituation();
 			controller.printSituation();
 		}
+		cap.release();
 	} catch(dlib::serialization_error& e)	{
 		std::cout << "You need dlib's default face landmarking model file to run this example." << std::endl;
 		std::cout << "You can get it from the following URL: " << std::endl;
