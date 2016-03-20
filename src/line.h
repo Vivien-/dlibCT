@@ -32,6 +32,7 @@ public:
 	bool isInside(const dlib::point& p) const;
 	bool position(dlib::point & other);
 	double distance(dlib::point & other);
+
 private:
 	dlib::point m_p1;
 	dlib::point m_p2;

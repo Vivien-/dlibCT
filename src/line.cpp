@@ -9,17 +9,14 @@
 
 namespace CT {
 
-//Line::Line() {
-//	m_id = 0;
-//	m_a = 0;
-//	m_b = 0;
-//}
-
 Line::Line(dlib::point &p1, dlib::point &p2, CT::identifier_t id_) {
 	m_p1 = p1;
 	m_p2 = p2;
 	m_id = id_;
-	m_a = (p1.y() - p2.y())/(p1.x() - p2.x());
+	if(p1 == p2)
+		m_a = 0;
+	else
+		m_a = (p1.y() - p2.y())/(p1.x() - p2.x());
 	m_b = p1.y() - m_a*p2.x();
 }
 

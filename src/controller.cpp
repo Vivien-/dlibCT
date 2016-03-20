@@ -6,6 +6,7 @@
  */
 
 #include "controller.h"
+#include "metadata_editor.h"
 #include "id_generator.h"
 #include <boost/lexical_cast.hpp>
 
@@ -56,13 +57,20 @@ void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 	}
 }
 
-void Controller::display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel> & cimg){
-	win.clear_overlay();
-	win.set_image(cimg);
-	// Create a circle of radius 5 on th center of the tracked object
-	int i = 0;
-	for(auto it = trackers.begin(); it != trackers.end(); ++it)
-		win.add_overlay(dlib::image_window::overlay_circle(dlib::center(trackers.find(it->first)->second.getTracker().get_position()), 5, dlib::rgb_pixel(0,255,0), boost::lexical_cast<std::string>(trackers.find(it->first)->second.getId())));
+void Controller::display(){
+	//clear previously drawn stuff. If you want to display the path of the tracked object, comment that line
+	m_editor->display.clear_overlay();
+	//display the lines (corresponding with a counter)
+	for(auto it = lines.begin(); it != lines.end(); ++it) {
+		dlib::point p1 = lines.find(it->first)->second.getFirstEndpoint();
+		dlib::point p2 = lines.find(it->first)->second.getSecondEndpoint();
+		m_editor->display.add_overlay(dlib::image_window::overlay_line(p1, p2, dlib::rgb_pixel(0,0,255)));
+	}
+	// Create a circle of radius 3 on the center of the tracked object and label it with the id of the tracker
+	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
+		CT::Tracker & t = trackers.find(it->first)->second;
+		m_editor->display.add_overlay(dlib::image_window::overlay_circle(dlib::center(t.getTracker().get_position()), 3, dlib::rgb_pixel(8*t.getId()*t.getId(), 5*t.getId()*t.getId()*t.getId(), t.getId()*t.getId()), boost::lexical_cast<std::string>(t.getId())));
+	}
 }
 
 void Controller::addLine(dlib::point &p1, dlib::point &p2) {
@@ -74,35 +82,33 @@ void Controller::addLine(dlib::point &p1, dlib::point &p2) {
 	next_id++;
 }
 
-
 void Controller::setTrackersToCounters(){
 	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
-			dlib::point p = trackers.find(it->first)->second.current();//it->second.current();
-			CT::identifier_t best_counter_id = getBestLine(p);
-			setTrackerToCounter(it->first, best_counter_id);
-		}
+		dlib::point p = trackers.find(it->first)->second.current();//it->second.current();
+		CT::identifier_t best_counter_id = getBestLine(p);
+		setTrackerToCounter(it->first, best_counter_id);
+	}
 }
 
 void Controller::updateCounters(){
 	for(auto it = counters.begin(); it != counters.end(); ++it) {
-			CT::Line &current_line = lines.find(it->first)->second;
-			CT::Counter &current_counter = it->second;
-			std::map<CT::identifier_t, int> id_trackers = current_counter.getIdTrackers();
-			std::cout<<"id_trackers.size(): "<<id_trackers.size()<<std::endl;
-			for(auto that_id = id_trackers.begin(); that_id != id_trackers.end(); ++that_id) {
-				CT::Tracker &that_tracker = trackers.find(that_id->first)->second;
-				dlib::point initial = that_tracker.initial();
-				dlib::point current = that_tracker.current();
-				if(current_line.position(initial) == true && current_line.position(current) == false){
-					current_counter.incrOut();
-					that_tracker.setInitial(current);
-				}
-				else if(current_line.position(initial) == false && current_line.position(current) == true){
-					current_counter.incrIn();
-					that_tracker.setInitial(current);
-				}
+		CT::Line &current_line = lines.find(it->first)->second;
+		CT::Counter &current_counter = it->second;
+		std::map<CT::identifier_t, int> id_trackers = current_counter.getIdTrackers();
+		for(auto that_id = id_trackers.begin(); that_id != id_trackers.end(); ++that_id) {
+			CT::Tracker &that_tracker = trackers.find(that_id->first)->second;
+			dlib::point initial = that_tracker.initial();
+			dlib::point current = that_tracker.current();
+			if(current_line.position(initial) == true && current_line.position(current) == false){
+				current_counter.incrOut();
+				that_tracker.setInitial(current);
+			}
+			else if(current_line.position(initial) == false && current_line.position(current) == true){
+				current_counter.incrIn();
+				that_tracker.setInitial(current);
 			}
 		}
+	}
 }
 
 void Controller::updateCountersSituation() {
@@ -116,18 +122,17 @@ void Controller::setTrackerToCounter(CT::identifier_t tr, CT::identifier_t ctr){
 }
 
 void Controller::printSituation() {
+	std::string s;
 	if(lines.size()) {
-		std::cout<<"number of counter: "<<counters.size()<<std::endl;
 		for(auto it = counters.begin(); it != counters.end(); ++it) {
-
 			int entered = counters.find(it->first)->second.getIn();//it->second.getIn();
 			int left = counters.find(it->first)->second.getOut();  //it->second.getOut();
-			std::cout<<"Counters id "<<it->first<<" entered: "<<entered<<" left: "<<left<<std::endl;
+			s += "Counters[" + boost::lexical_cast<std::string>(counters.find(it->first)->second.getId()) + "]: In=" + boost::lexical_cast<std::string>(entered) + " Out=" + boost::lexical_cast<std::string>(left) + "\n";
 		}
 	}
+	m_editor->display.add_overlay(dlib::image_window::overlay_rect(dlib::rectangle(), dlib::rgb_pixel(255,255,255), s));
+	std::cout<<s<<std::endl;
 }
-
-
 
 CT::identifier_t Controller::getBestLine(dlib::point p) {
 	double distance = std::numeric_limits<double>::max();
@@ -143,5 +148,10 @@ CT::identifier_t Controller::getBestLine(dlib::point p) {
 	if(id != -1)
 		return id;
 }
+
+void Controller::setEditor(CT::metadata_editor* w) {
+	m_editor = w;
+}
+
 
 } /* namespace CT */

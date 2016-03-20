@@ -20,6 +20,10 @@
 #include "line.h"
 
 namespace CT {
+class metadata_editor;
+}
+
+namespace CT {
 
 class Controller {
 public:
@@ -30,7 +34,7 @@ public:
 	// Update all trackers position for the current frame
 	void update(dlib::cv_image<dlib::bgr_pixel> & cimg);
 	// Display all the trackers on the current frame
-	void display(dlib::image_window &win, dlib::cv_image<dlib::bgr_pixel> & cimg);
+	void display();
 	// Create a new line (following the user chosing the 2 endpoints on the image)
 	void addLine(dlib::point &p1, dlib::point &p2);
 	// For each line, update the number of tracker that entered or left that line
@@ -39,6 +43,9 @@ public:
 	void setTrackerToCounter(const CT::identifier_t tr, const CT::identifier_t ctr);
 	// debug
 	void printSituation();
+	//
+	CT::metadata_editor * m_editor;
+	void setEditor(CT::metadata_editor* w);
 
 private:
 	// Return the best line (closest ?) to the object
