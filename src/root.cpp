@@ -6,6 +6,7 @@
  */
 
 #include "root.h"
+#include <chrono>
 
 namespace CT {
 
@@ -32,16 +33,41 @@ Root::~Root()
 	delete m_window;
 }
 
-void Root::run() {
-	//get video from a device ( 0 for the webcam)
-	cv::VideoCapture cap(0);
-	//get the face detector
+void Root::run(int argc, char* argv[]) {
+	cv::VideoCapture cap;
+	if (argc==1) {
+	    cap = cv::VideoCapture(0);
+	} else {
+	    cap = cv::VideoCapture(argv[1]);
+	}
+
+	/**
+	 * If you want to use your own detecter uncomment the following lines
+	 *
+	 *	typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<6> > image_scanner_type;
+	 *	dlib::object_detector<image_scanner_type> d;
+	 *	dlib::deserialize("/home/vivien/Téléchargements/face_detector.svm") >> d;
+	**/
+
+	/**
+	 * Else using the given get the face detector
+	 */
 	dlib::frontal_face_detector d = dlib::get_frontal_face_detector();
+
 	uint64 nfrm = 0;
 	dlib::image_display & dplay = m_window->display;
 
+	//Check much time is consummed for each functions
+	double df_t;
+	double p_t;
+	double u_t;
+	double d_t;
+	double uc_t;
+	double ps_t;
+
 	// Grab and process frames until the main window is closed by the user.
 	while(!m_window->is_closed()) {
+		nfrm++;
 		// Grab a frame
 		cv::Mat temp;
 		cap >> temp;
@@ -50,19 +76,55 @@ void Root::run() {
 		dlib::cv_image<dlib::bgr_pixel> cimg(temp);
 		dplay.set_image(cimg);
 
-		// Detect faces every 20 frames (less laggy)
-		if(nfrm++ % 20 == 0) {
+		// Detect faces every 50 frames (less laggy)
+		std::chrono::high_resolution_clock::time_point t6 = std::chrono::high_resolution_clock::now();
+		if(nfrm % 50 == 0) {
 			std::vector<dlib::rectangle> faces = d(cimg);
 			m_controller->process(faces, cimg);
 		}
+		std::chrono::high_resolution_clock::time_point t8 = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 		//update tracker
 		m_controller->update(cimg);
+		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 		//display tracked object and lines
 		m_controller->display();
+		std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
 		//update number of people that crossed each lines for the current frame
 		m_controller->updateCountersSituation();
+		std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
 		//display those numbers
 		m_controller->printSituation();
+		std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
+		std::cout<<"Time for detection (+process()) execution: "<<std::chrono::duration_cast<std::chrono::microseconds>( t8 - t6 ).count()<<std::endl;
+		std::cout<<"Time for update() execution: "<<std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count()<<std::endl;
+		std::cout<<"Time for display() execution: "<<std::chrono::duration_cast<std::chrono::microseconds>( t3 - t2 ).count()<<std::endl;
+		std::cout<<"Time for updateCountersSituation() execution: "<<std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count()<<std::endl;
+		std::cout<<"Time for printSituation() execution: "<<std::chrono::duration_cast<std::chrono::microseconds>( t5 - t4 ).count()<<std::endl;
+
+		df_t += std::chrono::duration_cast<std::chrono::microseconds>( t8 - t6 ).count();
+		u_t += std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+		d_t += std::chrono::duration_cast<std::chrono::microseconds>( t3 - t2 ).count();
+		uc_t += std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
+		ps_t += std::chrono::duration_cast<std::chrono::microseconds>( t5 - t4 ).count();
+		//TODO: mean of each funcution execution time
+
+		if(nfrm == cap.get(CV_CAP_PROP_FRAME_COUNT) - 2) {
+			std::cout<<"\nMeans of time: \n\t"
+					<<"detection faces(): "<<df_t/nfrm<<" microseconds\n\t"
+					<<"update(): "<<u_t/nfrm<<" microseconds\n\t"
+					<<"display(): "<<d_t/nfrm<<" microseconds\n\t"
+					<<"updateCountersSituation(): "<<uc_t/nfrm<<" microseconds\n\t"
+					<<"printSituation(): "<<ps_t/nfrm<<" microseconds"<<std::endl;
+
+			std::cout<<"Sum of time: \n\t"
+					<<"detection faces(): "<<df_t<<" microseconds\n\t"
+					<<"update(): "<<u_t<<" microseconds\n\t"
+					<<"display(): "<<d_t<<" microseconds\n\t"
+					<<"updateCountersSituation(): "<<uc_t<<" microseconds\n\t"
+					<<"printSituation(): "<<ps_t<<" microseconds"<<std::endl;
+		}
+
 	}
 	//opencv videocapture cause some memory leak... even with the release() call (which is probably useless)
 	cap.release();

@@ -14,6 +14,7 @@ namespace CT {
 
 Controller::Controller() {
 	m_threshold = 10.0;
+	m_editor = nullptr;
 }
 
 Controller::~Controller() {
@@ -67,9 +68,15 @@ void Controller::display(){
 		m_editor->display.add_overlay(dlib::image_window::overlay_line(p1, p2, dlib::rgb_pixel(0,0,255)));
 	}
 	// Create a circle of radius 3 on the center of the tracked object and label it with the id of the tracker
+	displayTrackers();
+}
+
+void Controller::displayTrackers() {
 	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
 		CT::Tracker & t = trackers.find(it->first)->second;
-		m_editor->display.add_overlay(dlib::image_window::overlay_circle(dlib::center(t.getTracker().get_position()), 3, dlib::rgb_pixel(8*t.getId()*t.getId(), 5*t.getId()*t.getId()*t.getId(), t.getId()*t.getId()), boost::lexical_cast<std::string>(t.getId())));
+		dlib::rectangle center_rect = dlib::centered_rect(dlib::center(t.getTracker().get_position()), 5, 5);
+		m_editor->display.add_overlay(dlib::image_window::overlay_rect(center_rect, dlib::rgb_pixel(8*t.getId()*t.getId(), 5*t.getId()*t.getId()*t.getId(), t.getId()*t.getId()), boost::lexical_cast<std::string>(t.getId())));
+		m_editor->display.add_overlay(dlib::image_window::overlay_rect(t.getTracker().get_position(), dlib::rgb_pixel(8*t.getId()*t.getId(), 5*t.getId()*t.getId()*t.getId(), t.getId()*t.getId()), boost::lexical_cast<std::string>(t.getId())));
 	}
 }
 
@@ -145,8 +152,7 @@ CT::identifier_t Controller::getBestLine(dlib::point p) {
 			id = current_line.getId();
 		}
 	}
-	if(id != -1)
-		return id;
+	return id;
 }
 
 void Controller::setEditor(CT::metadata_editor* w) {

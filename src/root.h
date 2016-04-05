@@ -18,7 +18,7 @@ public:
 	static Root & get();
 	CT::Controller & controller();
 	CT::metadata_editor & window();
-	void run();
+	void run(int argc, char* argv[]);
 
 private:
     Root();
