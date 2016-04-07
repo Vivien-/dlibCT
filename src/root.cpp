@@ -44,15 +44,16 @@ void Root::run(int argc, char* argv[]) {
 	/**
 	 * If you want to use your own detecter uncomment the following lines
 	 *
-	 *	typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<6> > image_scanner_type;
-	 *	dlib::object_detector<image_scanner_type> d;
-	 *	dlib::deserialize("/home/vivien/Téléchargements/face_detector.svm") >> d;
-	**/
+	 */
+	typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<6> > image_scanner_type;
+	dlib::object_detector<image_scanner_type> d;
+	dlib::deserialize("/home/vivien/Téléchargements/person.svm") >> d;
+	/**/
 
 	/**
 	 * Else using the given get the face detector
 	 */
-	dlib::frontal_face_detector d = dlib::get_frontal_face_detector();
+//	dlib::frontal_face_detector d = dlib::get_frontal_face_detector();
 
 	uint64 nfrm = 0;
 	dlib::image_display & dplay = m_window->display;
@@ -65,9 +66,12 @@ void Root::run(int argc, char* argv[]) {
 	double uc_t;
 	double ps_t;
 
+	std::chrono::high_resolution_clock::time_point initial_t = std::chrono::high_resolution_clock::now();
+
 	// Grab and process frames until the main window is closed by the user.
 	while(!m_window->is_closed()) {
 		nfrm++;
+		std::chrono::high_resolution_clock::time_point current_t = std::chrono::high_resolution_clock::now();
 		// Grab a frame
 		cv::Mat temp;
 		cap >> temp;
@@ -96,6 +100,7 @@ void Root::run(int argc, char* argv[]) {
 		//display those numbers
 		m_controller->printSituation();
 		std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
+		std::cout<<"Current FPS: "<<(double)1.0000000/(double)(std::chrono::duration_cast<std::chrono::microseconds>( t5 - current_t ).count())*1000000<<std::endl;
 		std::cout<<"Time for detection (+process()) execution: "<<std::chrono::duration_cast<std::chrono::microseconds>( t8 - t6 ).count()<<std::endl;
 		std::cout<<"Time for update() execution: "<<std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count()<<std::endl;
 		std::cout<<"Time for display() execution: "<<std::chrono::duration_cast<std::chrono::microseconds>( t3 - t2 ).count()<<std::endl;
@@ -115,7 +120,8 @@ void Root::run(int argc, char* argv[]) {
 					<<"update(): "<<u_t/nfrm<<" microseconds\n\t"
 					<<"display(): "<<d_t/nfrm<<" microseconds\n\t"
 					<<"updateCountersSituation(): "<<uc_t/nfrm<<" microseconds\n\t"
-					<<"printSituation(): "<<ps_t/nfrm<<" microseconds"<<std::endl;
+					<<"printSituation(): "<<ps_t/nfrm<<" microseconds\n\t"
+					<<"mean of FPS: "<<(double)nfrm/(double)(std::chrono::duration_cast<std::chrono::microseconds>( current_t - initial_t ).count() / 1000000)<<std::endl;
 
 			std::cout<<"Sum of time: \n\t"
 					<<"detection faces(): "<<df_t<<" microseconds\n\t"

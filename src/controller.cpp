@@ -13,7 +13,7 @@
 namespace CT {
 
 Controller::Controller() {
-	m_threshold = 10.0;
+	m_threshold = 4.5;
 	m_editor = nullptr;
 }
 
