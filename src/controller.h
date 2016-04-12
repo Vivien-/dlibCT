@@ -55,6 +55,7 @@ private:
 	std::map<CT::identifier_t, CT::Tracker> trackers;
 	std::map<CT::identifier_t, CT::Counter> counters;
 	std::map<CT::identifier_t, CT::Line> lines;
+	int maxFreezDuration;
 	// Threshold value of wether we keep a tracker or remove it (depending of the confidence of the tracker)
  	double m_threshold;
  	void setTrackersToCounters();

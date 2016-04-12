@@ -36,7 +36,8 @@ public:
 	double update(dlib::cv_image<dlib::bgr_pixel> & img);
 	void setCounter(CT::identifier_t ctr);
 	CT::identifier_t getCounter();
-
+	void incrFreezDuration();
+	int getFreezDuration();
 
 private:
 	dlib::correlation_tracker m_tr;
@@ -44,6 +45,10 @@ private:
 	CT::identifier_t m_ctr;
 	dlib::point m_current;
 	dlib::point m_initial;
+	int freezDuration;
+	double treshold;
+	bool isFreezing(dlib::point current, dlib::point center);
+	void resetFreezingDuration();
 };
 
 } /* namespace CT */

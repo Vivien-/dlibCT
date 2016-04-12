@@ -15,6 +15,7 @@ namespace CT {
 Controller::Controller() {
 	m_threshold = 4.5;
 	m_editor = nullptr;
+	maxFreezDuration = 15;
 }
 
 Controller::~Controller() {
@@ -49,10 +50,11 @@ void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 		// Confidence that the area covored by the tracker looks like the initial tracked object
 		double confidence = trackers.find(it->first)->second.update(cimg);
 		// If the confidence is under a certain threshold, this tracker can be removed (the object probably disappeared frome the image)
-		if(confidence < m_threshold){
+		if(confidence < m_threshold || trackers.find(it->first)->second.getFreezDuration() >= maxFreezDuration){
 			CT::Counter & counter = counters.find(trackers.find((it)->first)->second.getCounter())->second;
-			counter.removeTracker(it->first);
-			trackers.erase(trackers.find((it++)->first)->second.getId());
+			counter.removeTracker(trackers.find(it->first)->second.getId());
+			trackers.erase(trackers.find((it)->first)->second.getId());
+			it++;
 		} else
 			++it;
 	}
@@ -139,6 +141,9 @@ void Controller::printSituation() {
 	}
 	m_editor->display.add_overlay(dlib::image_window::overlay_rect(dlib::rectangle(), dlib::rgb_pixel(255,255,255), s));
 	std::cout<<s<<std::endl;
+	for(auto it = trackers.begin(); it != trackers.end(); ++it) {
+		std::cout<<"tracker "<<trackers.find(it->first)->second.getId()<<" :"<<trackers.find(it->first)->second.getFreezDuration()<<std::endl;
+	}
 }
 
 CT::identifier_t Controller::getBestLine(dlib::point p) {

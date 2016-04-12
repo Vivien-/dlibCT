@@ -18,6 +18,8 @@ namespace CT {
 Tracker::Tracker(CT::identifier_t id, CT::identifier_t ctr) {
 	m_id = id;
 	m_ctr = ctr;
+	treshold = 10;
+	freezDuration = 0;
 }
 
 Tracker::~Tracker() {
@@ -51,7 +53,12 @@ CT::identifier_t Tracker::getId() const {
 
 double Tracker::update(dlib::cv_image<dlib::bgr_pixel> & img) {
 	double confidence = m_tr.update(img);
-	m_current = dlib::center(m_tr.get_position());
+	dlib::point center = dlib::center(m_tr.get_position());
+	if(isFreezing(m_current, center))
+		incrFreezDuration();
+	else
+		resetFreezingDuration();
+	m_current = center;
 	return confidence;
 }
 
@@ -67,4 +74,23 @@ CT::identifier_t Tracker::getCounter(){
 	return m_ctr;
 }
 
+
+void Tracker::incrFreezDuration(){
+	freezDuration++;
+}
+int Tracker::getFreezDuration(){
+	return freezDuration;
+}
+
+bool Tracker::isFreezing(dlib::point current, dlib::point center){
+	double distance = std::sqrt((current.x()-center.x())*(current.x()-center.x()) + (current.y()-center.y())*(current.y()-center.y()));
+	if(distance < treshold)
+		return true;
+	else
+		return false;
+}
+
+void Tracker::resetFreezingDuration(){
+	freezDuration = 0;
+}
 } /* namespace CT */
