@@ -18,7 +18,7 @@ namespace CT {
 Tracker::Tracker(CT::identifier_t id, CT::identifier_t ctr) {
 	m_id = id;
 	m_ctr = ctr;
-	treshold = 10;
+	treshold = 5;
 	freezDuration = 0;
 }
 
