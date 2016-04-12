@@ -56,8 +56,8 @@ void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 			trackers.erase(trackers.find((it++)->first)->second.getId());
 
 		} else{
-			CT::Tracker t = trackers.find(it->first)->second;
-			trackers.find(it->first)->second.setCounter(getBestLine(t.current()));
+//			CT::Tracker t = trackers.find(it->first)->second;
+//			trackers.find(it->first)->second.setCounter(getBestLine(t.current()));
 			++it;
 		}
 
@@ -149,13 +149,10 @@ void Controller::printSituation() {
 }
 
 CT::identifier_t Controller::getBestLine(dlib::point p) {
-	std::cout<<"appel"<<std::endl;
 	double distance = std::numeric_limits<double>::max();
 	CT::identifier_t id = -1;
 	for(auto it = lines.begin(); it!=lines.end(); ++it){
 		CT::Line & current_line = lines.find(it->first)->second;
-		std::cout<<"line id : "<<current_line.getId()<<std::endl;
-		std::cout<<"point  : "<<p<<std::endl;
 		double current_distance = current_line.distance(p);
 		if( current_distance < distance){
 			distance = current_distance;
