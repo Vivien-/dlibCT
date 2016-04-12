@@ -52,6 +52,8 @@ void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 		// If the confidence is under a certain threshold, this tracker can be removed (the object probably disappeared frome the image)
 		if(confidence < m_threshold || trackers.find(it->first)->second.getFreezDuration() >= maxFreezDuration){
 			CT::Counter & counter = counters.find(trackers.find((it)->first)->second.getCounter())->second;
+			std::cout<<"Associated counter: "<<trackers.find((it)->first)->second.getCounter()<<std::endl;
+			std::cout<<"Tracker id "<<trackers.find(it->first)->second.getId()<<" removed from counter "<<counter.getId()<<std::endl;
 			counter.removeTracker(trackers.find(it->first)->second.getId());
 			trackers.erase(trackers.find((it++)->first)->second.getId());
 
@@ -151,10 +153,12 @@ void Controller::printSituation() {
 CT::identifier_t Controller::getBestLine(dlib::point p) {
 	double distance = std::numeric_limits<double>::max();
 	CT::identifier_t id = -1;
-	for(auto it = lines.begin(); it!=lines.end(); ++it){
+	for(auto it = lines.begin(); it != lines.end(); ++it){
 		CT::Line & current_line = lines.find(it->first)->second;
+		std::cout<<"Nb of lines: "<<lines.size()<<std::endl;
+		std::cout<<"Current line id: "<<current_line.getId()<<std::endl;
 		double current_distance = current_line.distance(p);
-		if( current_distance < distance){
+		if(current_distance < distance){
 			distance = current_distance;
 			id = current_line.getId();
 		}
