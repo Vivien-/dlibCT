@@ -82,8 +82,6 @@ void Root::run(int argc, char* argv[]) {
 		nfrm++;
 		//std::chrono::high_resolution_clock::time_point current_t = std::chrono::high_resolution_clock::now();
 		// Grab a frame
-		//cap.read(frame);
-		//cv::Mat temp(frame, CV_LOAD_IMAGE_COLOR);
 		cap >> temp;
 		// Turn OpenCV's Mat into something dlib can deal with. don't modify temp while using cimg.
 		dlib::cv_image<dlib::bgr_pixel> cimg(temp);

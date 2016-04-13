@@ -10,6 +10,8 @@
 namespace CT {
 
 Line::Line(dlib::point &p1, dlib::point &p2, CT::identifier_t id_) {
+	std::cout<<__FILE__<<__FUNCTION__<<" at "<<__LINE__<<"=>\n"
+			<<p1<<" and "<<p2<<std::endl;
 	m_p1 = p1;
 	m_p2 = p2;
 	m_id = id_;

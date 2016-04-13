@@ -141,16 +141,7 @@ void Controller::printSituation() {
 		std::cout<<"counter "<<counter.second.getId()<<" : IN["<<entered<<"] OUT["<<left<<"]"<<" L["<<counter.second.getLine()<<"]"<<std::endl;
 	}
 	std::cout<<s<<std::endl;
-	//m_editor->display.add_overlay(dlib::image_window::overlay_rect(dlib::rectangle(), dlib::rgb_pixel(255,255,255), s));
-	std::cout<<"number of trackers : "<<trackers.size()<<std::endl;
-	for (auto &tracker : trackers){
-		std::cout << "tracker "<<tracker.first <<" : counter "<<tracker.second.getCounter()<< std::endl;
-	}
-	std::cout<<"number of lines : "<<lines.size()<<std::endl;
-	for (auto &line : lines ){
-	   std::cout << line.first << std::endl;
-	}
-
+	m_editor->display.add_overlay(dlib::image_window::overlay_rect(dlib::rectangle(), dlib::rgb_pixel(255,0,0), s));
 }
 
 CT::identifier_t Controller::getBestLine(dlib::point p) {
@@ -158,14 +149,19 @@ CT::identifier_t Controller::getBestLine(dlib::point p) {
 	double distance = std::numeric_limits<double>::max();
 	double current_distance = 0;
 	CT::identifier_t id = -1;
+	std::cout<<__FILE__<<"\t: "<<__FUNCTION__<<" at "<<__LINE__<<" => "<<std::endl;
+	std::cout<<"Number of lines: "<<lines.size()<<std::endl;
 	for(auto & line : lines){
 		current_distance = line.second.distance(p);
+		std::cout<<"Lines["<<line.first<<"] at distance "<<current_distance<<std::endl;
 		//std::cout<<current_distance<<std::endl;
 		if(current_distance < distance){
 			distance = current_distance;
 			id = line.second.getId();
 		}
 	}
+	std::cout<<"Returns "<<id
+			<<"\n ---END of getbestline---\n"<<std::endl;
 	return id;
 }
 
