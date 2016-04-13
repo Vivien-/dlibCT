@@ -51,8 +51,10 @@ void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 		double confidence = trackers.find(it->first)->second.update(cimg);
 		// If the confidence is under a certain threshold, this tracker can be removed (the object probably disappeared frome the image)
 		if(confidence < m_threshold || trackers.find(it->first)->second.getFreezDuration() >= maxFreezDuration){
-			CT::Counter & counter = counters.find(trackers.find((it)->first)->second.getCounter())->second;
-			counter.removeTracker(trackers.find(it->first)->second.getId());
+			if(counters.size()) {
+				CT::Counter & counter = counters.find(trackers.find((it)->first)->second.getCounter())->second;
+				counter.removeTracker(trackers.find(it->first)->second.getId());
+			}
 			trackers.erase(trackers.find((it++)->first)->second.getId());
 
 		} else{
@@ -96,15 +98,15 @@ void Controller::setTrackersToCounters(){
 	for(auto & tracker : trackers) {
 		dlib::point p = tracker.second.current();//it->second.current();
 		CT::identifier_t best_counter_id = getBestLine(p);
-		setTrackerToCounter(tracker.first, best_counter_id);
+		if(best_counter_id != -1)
+			setTrackerToCounter(tracker.first, best_counter_id);
 	}
 }
 
 void Controller::updateCounters(){
-	for(auto &counter : counters) {
+	for(auto & counter : counters) {
 		CT::Counter &current_counter = counter.second;
 		CT::Line &current_line = lines.find(current_counter.getLine())->second;
-
 		std::map<CT::identifier_t, int> id_trackers = current_counter.getIdTrackers();
 		for(auto & that_id : id_trackers) {
 			CT::Tracker &that_tracker = trackers.find(that_id.first)->second;
@@ -138,30 +140,23 @@ void Controller::printSituation() {
 	for(auto & counter : counters) {
 		int entered = counter.second.getIn();
 		int left = counter.second.getOut();
-		std::cout<<"counter "<<counter.second.getId()<<" : IN["<<entered<<"] OUT["<<left<<"]"<<" L["<<counter.second.getLine()<<"]"<<std::endl;
+		s += "Counters[" + boost::lexical_cast<std::string>(counter.first) + "]: In=" + boost::lexical_cast<std::string>(entered) + " Out=" + boost::lexical_cast<std::string>(left) + "\n";
 	}
 	std::cout<<s<<std::endl;
-	m_editor->display.add_overlay(dlib::image_window::overlay_rect(dlib::rectangle(), dlib::rgb_pixel(255,0,0), s));
+	m_editor->display.add_overlay(dlib::image_window::overlay_rect(dlib::rectangle(), dlib::rgb_pixel(0,255,0), s));
 }
 
 CT::identifier_t Controller::getBestLine(dlib::point p) {
-	//std::cout<<"appel"<<std::endl;
 	double distance = std::numeric_limits<double>::max();
 	double current_distance = 0;
 	CT::identifier_t id = -1;
-	std::cout<<__FILE__<<"\t: "<<__FUNCTION__<<" at "<<__LINE__<<" => "<<std::endl;
-	std::cout<<"Number of lines: "<<lines.size()<<std::endl;
 	for(auto & line : lines){
 		current_distance = line.second.distance(p);
-		std::cout<<"Lines["<<line.first<<"] at distance "<<current_distance<<std::endl;
-		//std::cout<<current_distance<<std::endl;
 		if(current_distance < distance){
 			distance = current_distance;
 			id = line.second.getId();
 		}
 	}
-	std::cout<<"Returns "<<id
-			<<"\n ---END of getbestline---\n"<<std::endl;
 	return id;
 }
 
