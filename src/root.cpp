@@ -55,6 +55,7 @@ void Root::run(int argc, char* argv[]) {
 	typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<6> > image_scanner_type;
 	dlib::object_detector<image_scanner_type> d;
 	dlib::deserialize("/home/mohammed/Bureau/best.svm") >> d;
+
 	/**/
 
 	/**
@@ -73,13 +74,13 @@ void Root::run(int argc, char* argv[]) {
 	double uc_t;
 	double ps_t;
 
-	std::chrono::high_resolution_clock::time_point initial_t = std::chrono::high_resolution_clock::now();
+	//std::chrono::high_resolution_clock::time_point initial_t = std::chrono::high_resolution_clock::now();
 	cv::Mat temp, temp2;
 
 	// Grab and process frames until the main window is closed by the user.
 	while(!m_window->is_closed()) {
 		nfrm++;
-		std::chrono::high_resolution_clock::time_point current_t = std::chrono::high_resolution_clock::now();
+		//std::chrono::high_resolution_clock::time_point current_t = std::chrono::high_resolution_clock::now();
 		// Grab a frame
 		//cap.read(frame);
 		//cv::Mat temp(frame, CV_LOAD_IMAGE_COLOR);
@@ -89,25 +90,25 @@ void Root::run(int argc, char* argv[]) {
 		dplay.set_image(cimg);
 
 		// Detect faces every 50 frames (less laggy)
-		std::chrono::high_resolution_clock::time_point t6 = std::chrono::high_resolution_clock::now();
+		//std::chrono::high_resolution_clock::time_point t6 = std::chrono::high_resolution_clock::now();
 		if(nfrm % 50 == 0) {
 			std::vector<dlib::rectangle> faces = d(cimg);
 			m_controller->process(faces, cimg);
 		}
-		std::chrono::high_resolution_clock::time_point t8 = std::chrono::high_resolution_clock::now();
-		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+		//std::chrono::high_resolution_clock::time_point t8 = std::chrono::high_resolution_clock::now();
+		//std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 		//update tracker
 		m_controller->update(cimg);
-		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+		//std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 		//display tracked object and lines
 		m_controller->display();
-		std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
+		//std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
 		//update number of people that crossed each lines for the current frame
 		m_controller->updateCountersSituation();
-		std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
+		//std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
 		//display those numbers
 		m_controller->printSituation();
-		std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
+		//std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
 
 //		std::cout<<"Current FPS: "<<(double)1.0000000/(double)(std::chrono::duration_cast<std::chrono::microseconds>( t5 - current_t ).count())*1000000<<std::endl;
 //		std::cout<<"Time for detection (+process()) execution: "<<std::chrono::duration_cast<std::chrono::microseconds>( t8 - t6 ).count()<<std::endl;

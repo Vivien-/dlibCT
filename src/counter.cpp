@@ -61,4 +61,8 @@ std::map<CT::identifier_t, int> Counter::getIdTrackers(){
 	return  m_id_trackers;
 }
 
+
+CT::identifier_t Counter::getLine(){
+	return m_id_line;
+}
 } // Namespace CT

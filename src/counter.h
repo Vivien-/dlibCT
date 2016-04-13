@@ -45,6 +45,7 @@ public:
 	//void updateSituation();
 	CT::identifier_t getId() const;
 	void setLine(CT::identifier_t l);
+	CT::identifier_t getLine();
 
 private:
 	std::map<CT::identifier_t, CT::identifier_t> m_id_trackers;
