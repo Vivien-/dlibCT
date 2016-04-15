@@ -53,6 +53,7 @@ public:
 	std::map<CT::identifier_t, CT::Line> getLines();
 	void addSelectedLine(CT::identifier_t id);
 
+
 private:
 	//draw tracked object on frame
 	void displayTrackers();

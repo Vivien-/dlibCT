@@ -24,9 +24,9 @@ class gui : public dlib::drawable_window{
 public:
 	gui();
 	virtual ~gui();
-	dlib::image_display display;
     void setController(CT::Controller * ctrl);
     CT::Controller* controller();
+	dlib::image_display display;
 
 private:
     CT::Controller * m_controller;
@@ -42,6 +42,7 @@ private:
 	void draw_lines_handler();
 	void display_window_handler(const dlib::point& p, bool is_double_click, unsigned long state);
 	void delete_line_handler(const dlib::image_display::overlay_line);
+	void run_handler();
 	dlib::button svm;
 	dlib::button video;
 	dlib::radio_button url;
@@ -57,6 +58,8 @@ private:
 	int click_step;
 	dlib::point p1;
 	dlib::point p2;
+	cv::VideoCapture cap;
+
 };
 
 } /* namespace CT */

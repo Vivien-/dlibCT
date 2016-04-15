@@ -91,6 +91,7 @@ void Controller::displayTrackers() {
 }
 
 void Controller::addLine(dlib::point &p1, dlib::point &p2) {
+	std::cout<<"add line"<<std::endl;
 	CT::identifier_t next_id = IDGenerator::instance().next();
 	CT::Line l = CT::Line(p1, p2, next_id);
 	CT::Counter c(next_id);
@@ -175,6 +176,7 @@ void Controller::setEditor(CT::gui* w) {
 }
 
 void Controller::addSelectedLine(CT::identifier_t id) {
+	std::cout<<"add selectedline"<<std::endl;
 	auto it = to_be_removed.find(id);
 	if(it == to_be_removed.end())
 		to_be_removed.insert(id);
