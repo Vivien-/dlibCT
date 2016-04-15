@@ -9,6 +9,7 @@
 #define SRC_ROOT_H_
 #include "controller.h"
 #include "metadata_editor.h"
+#include "gui.h"
 
 namespace CT {
 

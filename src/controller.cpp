@@ -160,6 +160,12 @@ CT::identifier_t Controller::getBestLine(dlib::point p) {
 	return id;
 }
 
+void Controller::removeLine(CT::identifier_t id) {
+	lines.erase(id);
+	counters.erase(id);
+	setTrackersToCounters();
+}
+
 void Controller::setEditor(CT::metadata_editor* w) {
 	m_editor = w;
 }

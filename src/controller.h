@@ -41,6 +41,8 @@ public:
 	void updateCountersSituation();
 	// Attach a tracker to a counter (a counter own multiple trackers)
 	void setTrackerToCounter(const CT::identifier_t tr, const CT::identifier_t ctr);
+	// remove line id frome lines
+	void removeLine(CT::identifier_t id);
 	// debug
 	void printSituation();
 	//writable editor window
