@@ -48,13 +48,15 @@ public:
 	//writable editor window
 	CT::gui * m_editor;
 	void setEditor(CT::gui* w);
+	// Return the best line (closest ?) to the object
 	CT::identifier_t getBestLine(dlib::point p);
 	std::map<CT::identifier_t, CT::Line> getLines();
+	void addSelectedLine(CT::identifier_t id);
+
 private:
 	//draw tracked object on frame
 	void displayTrackers();
-	// Return the best line (closest ?) to the object
-
+	std::set<CT::identifier_t> to_be_removed;
 	std::map<CT::identifier_t, CT::Tracker> trackers;
 	std::map<CT::identifier_t, CT::Counter> counters;
 	std::map<CT::identifier_t, CT::Line> lines;

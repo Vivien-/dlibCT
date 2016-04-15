@@ -170,6 +170,9 @@ void Controller::setEditor(CT::gui* w) {
 	m_editor = w;
 }
 
+void Controller::addSelectedLine(CT::identifier_t id) {
+	to_be_removed.insert(id);
+}
 
 std::map<CT::identifier_t, CT::Line> Controller::getLines(){
 	return lines;
