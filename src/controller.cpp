@@ -71,7 +71,11 @@ void Controller::display(){
 	for(auto & line : lines) {
 		dlib::point p1 = line.second.getFirstEndpoint();
 		dlib::point p2 = line.second.getSecondEndpoint();
-		m_editor->display.add_overlay(dlib::image_window::overlay_line(p1, p2, dlib::rgb_pixel(0,0,255)));
+		dlib::rgb_pixel color(0,0,255);
+		if(to_be_removed.find(line.first) == to_be_removed.end())
+			m_editor->display.add_overlay(dlib::image_window::overlay_line(p1, p2, dlib::rgb_pixel(0,0,255)));
+		else
+			m_editor->display.add_overlay(dlib::image_window::overlay_line(p1, p2, dlib::rgb_pixel(255,0,0)));
 	}
 	// Create a circle of radius 3 on the center of the tracked object and label it with the id of the tracker
 	displayTrackers();
@@ -171,7 +175,11 @@ void Controller::setEditor(CT::gui* w) {
 }
 
 void Controller::addSelectedLine(CT::identifier_t id) {
-	to_be_removed.insert(id);
+	auto it = to_be_removed.find(id);
+	if(it == to_be_removed.end())
+		to_be_removed.insert(id);
+	else
+		to_be_removed.erase(it);
 }
 
 std::map<CT::identifier_t, CT::Line> Controller::getLines(){
