@@ -27,7 +27,7 @@ public:
     void setController(CT::Controller * ctrl);
     CT::Controller* controller();
 	dlib::image_display display;
-
+	void run_listener();
 private:
     CT::Controller * m_controller;
 	void svm_handler();
@@ -59,6 +59,7 @@ private:
 	dlib::point p1;
 	dlib::point p2;
 	cv::VideoCapture cap;
+	bool ready_to_run;
 
 };
 

@@ -67,6 +67,7 @@ Root::Root()
 	m_window->show();
 	m_controller->setEditor(m_window);
 	m_window->setController(m_controller);
+	m_window->run_listener();
 	m_window->wait_until_closed();
 }
 
@@ -114,7 +115,7 @@ void Root::run(int argc, char* argv[]) {
 //	TIME_TYPE initial_t = clock_now();
 //	cv::Mat temp;
 //	// Grab and process frames until the main window is closed by the user.
-//	while(!m_window->is_closed()) {
+//	while(!m_window->is_closed() && run==true) {
 //		nfrm++;
 //		TIME_TYPE current_t = clock_now();
 //		// Grab a frame
