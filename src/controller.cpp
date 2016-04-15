@@ -171,4 +171,8 @@ void Controller::setEditor(CT::gui* w) {
 }
 
 
+std::map<CT::identifier_t, CT::Line> Controller::getLines(){
+	return lines;
+}
+
 } /* namespace CT */

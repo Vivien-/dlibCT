@@ -92,7 +92,7 @@ void Root::run(int argc, char* argv[]) {
 	 */
 	typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<6> > image_scanner_type;
 	dlib::object_detector<image_scanner_type> d;
-	dlib::deserialize("/home/vivien/Téléchargements/object_detector.svm") >> d;
+	dlib::deserialize("/home/mohammed/dlib-18.18/examples/build/object_detector.svm") >> d;
 
 	/**
 	 * Else using the given get the face detector

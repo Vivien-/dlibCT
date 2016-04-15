@@ -56,6 +56,8 @@ private:
 	int click_step;
 	dlib::point p1;
 	dlib::point p2;
+	CT::Controller controller;
+	std::set<CT::identifier_t> to_be_removed;
 };
 
 } /* namespace CT */

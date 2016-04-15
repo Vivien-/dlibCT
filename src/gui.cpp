@@ -120,8 +120,18 @@ void gui::display_window_handler(const dlib::point& p, bool is_double_click, uns
 			click_step = 0;
 		}
 	} else if(is_double_click && !can_draw_lines) {
-		//controller.removeLine(controller.getBestLine(p));
-
+		CT::identifier_t id =  controller.getBestLine(p);
+		to_be_removed.insert(id);
+		display.clear_overlay();
+		std::map<CT::identifier_t, CT::Line> lines = controller.getLines();
+		for(auto & line : lines) {
+			dlib::point p1 = line.second.getFirstEndpoint();
+			dlib::point p2 = line.second.getSecondEndpoint();
+			if(to_be_removed.find(line.second.getId()) != to_be_removed.end())
+				display.add_overlay(dlib::image_window::overlay_line(p1, p2, dlib::rgb_pixel(255,0,0)));
+			else
+				display.add_overlay(dlib::image_window::overlay_line(p1, p2, dlib::rgb_pixel(0,0,255)));
+		}
 	}
 }
 
