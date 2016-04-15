@@ -6,7 +6,7 @@
  */
 
 #include "controller.h"
-#include "metadata_editor.h"
+#include "gui.h"
 #include "id_generator.h"
 #include <boost/lexical_cast.hpp>
 
@@ -166,7 +166,7 @@ void Controller::removeLine(CT::identifier_t id) {
 	setTrackersToCounters();
 }
 
-void Controller::setEditor(CT::metadata_editor* w) {
+void Controller::setEditor(CT::gui* w) {
 	m_editor = w;
 }
 

@@ -18,14 +18,14 @@ public:
 	virtual ~Root();
 	static Root & get();
 	CT::Controller & controller();
-	CT::metadata_editor & window();
+	CT::gui & window();
 	void run(int argc, char* argv[]);
 
 private:
     Root();
     static Root * s_instance;
 
-    CT::metadata_editor * m_window;
+    CT::gui * m_window;
     Controller * m_controller;
 };
 

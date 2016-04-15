@@ -10,6 +10,8 @@
 namespace CT {
 
 gui::gui() : svm(*this), display(*this), video(*this), url(*this), local(*this), link(*this), run(*this), stop(*this), draw_lines(*this){
+	m_controller = nullptr;
+
 	//main window settings
 	set_title("Crowd estimator");
 	set_size(800,500);
@@ -60,9 +62,6 @@ gui::gui() : svm(*this), display(*this), video(*this), url(*this), local(*this),
 	//video display settings
 	display.set_pos(200,0);
 	display.set_size(600,500);
-	dlib::array2d<dlib::rgb_pixel> cimg;
-	dlib::load_image(cimg, "/home/mohammed/Images/A/9Cup10.bmp");
-	display.set_image(cimg);
 	display.set_image_clicked_handler(*this, &gui::display_window_handler);
 }
 
@@ -116,14 +115,18 @@ void gui::display_window_handler(const dlib::point& p, bool is_double_click, uns
 		}
 		else {
 			p2 = dlib::point(p.x(),p.y());
-			controller.addLine(p1,p2);
+			m_controller->addLine(p1,p2);
 			display.add_overlay(dlib::image_window::overlay_line(p1, p2, dlib::rgb_pixel(0,0,255)));
 			click_step = 0;
 		}
 	} else if(is_double_click && !can_draw_lines) {
-		controller.removeLine(controller.getBestLine(p));
+		//controller.removeLine(controller.getBestLine(p));
 
 	}
+}
+
+void gui::setController(CT::Controller * ctrl) {
+	m_controller = ctrl;
 }
 
 } /* namespace CT */

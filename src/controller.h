@@ -20,7 +20,7 @@
 #include "line.h"
 
 namespace CT {
-class metadata_editor;
+class gui;
 }
 
 namespace CT {
@@ -46,8 +46,8 @@ public:
 	// debug
 	void printSituation();
 	//writable editor window
-	CT::metadata_editor * m_editor;
-	void setEditor(CT::metadata_editor* w);
+	CT::gui * m_editor;
+	void setEditor(CT::gui* w);
 
 private:
 	//draw tracked object on frame
