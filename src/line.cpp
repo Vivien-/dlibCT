@@ -10,8 +10,6 @@
 namespace CT {
 
 Line::Line(dlib::point &p1, dlib::point &p2, CT::identifier_t id_) {
-	std::cout<<__FILE__<<__FUNCTION__<<" at "<<__LINE__<<"=>\n"
-			<<p1<<" and "<<p2<<std::endl;
 	m_p1 = p1;
 	m_p2 = p2;
 	m_id = id_;
@@ -68,9 +66,19 @@ bool Line::position(dlib::point & other){
 		return (m_p2.x() - m_p1.x()) * (other.y() - m_p1.y()) - (m_p2.y() - m_p1.y()) * (other.x() - m_p1.x()) > 0;
 }
 
+const float length_squared(const dlib::point & v, const dlib::point & w){
+	return std::pow(v.x() - w.x(), 2) + pow(v.y() - w.y(), 2);
+}
 
 double Line::distance(dlib::point & other){
-	return std::fabs(-m_a*other.x() + other.y() - m_b)/std::sqrt(1 + m_a*m_a);
+	const float l2 = length_squared(m_p1, m_p2);
+	if (l2 == 0.0)
+		return std::sqrt(length_squared(other, m_p1));
+
+	float t = dlib::dot(other - m_p1, m_p2 - m_p1) / l2;
+	t = std::max((float)0.0, std::min((float)1.0, t));
+	dlib::point projection (m_p1 + t * (m_p2 - m_p1));  // Projection falls on the segment
+	return std::sqrt(length_squared(other, projection));
 }
 
 } // Namespace CT
