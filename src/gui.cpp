@@ -17,7 +17,7 @@ namespace CT {
 typedef std::chrono::high_resolution_clock::time_point TIME_TYPE;
 
 /**
-  *  for shorter definition timer for execution time debug
+ *  for shorter definition timer for execution time debug
  **/
 
 TIME_TYPE clock_now() {
@@ -60,7 +60,7 @@ gui::gui() : svm(*this), display(*this), video(*this), url(*this), local(*this),
 
 	//main window settings
 	set_title("Crowd estimator");
-	set_size(800,500);
+	set_size(900,600);
 
 	//svm button settings
 	svm.set_pos(10,100);
@@ -93,10 +93,9 @@ gui::gui() : svm(*this), display(*this), video(*this), url(*this), local(*this),
 	//
 	run.set_pos(10,400);
 	run.set_name("run");
-	//run.set_button_up_handler(*this, &gui::run_handler);
 	run.set_click_handler(*this, &gui::run_handler);
 	//
-	stop.set_pos(50,400);
+	stop.set_pos(100,400);
 	stop.set_name("stop");
 
 	//
@@ -109,7 +108,7 @@ gui::gui() : svm(*this), display(*this), video(*this), url(*this), local(*this),
 	ready_to_run = false;
 	//video display settings
 	display.set_pos(200,0);
-	display.set_size(600,500);
+	display.set_size(800,600);
 	display.set_image_clicked_handler(*this, &gui::display_window_handler);
 }
 
@@ -142,8 +141,11 @@ void gui::open_video_handler(const std::string& file_name){
 	cv::Mat temp;
 	cap >> temp;
 	dlib::cv_image<dlib::bgr_pixel> cimg(temp);
+	const int left_menu_size = 200;
+	set_size(display.left() + cimg.nc() + 4 + left_menu_size, display.top() + cimg.nr() + 4 + left_menu_size);
+	display.set_size(display.left() + cimg.nc() + 4, display.top() + cimg.nr() + 4);
 	display.set_image(cimg);
-	//cap.release();
+	cap.release();
 }
 
 void gui::svm_handler(){
@@ -190,21 +192,12 @@ void gui::setController(CT::Controller * ctrl) {
 
 void gui::run_listener(){
 	while(true){
+		std::cout<<"listener: "<<ready_to_run<<std::endl;
 		if(ready_to_run){
-
 			cap = cv::VideoCapture(video_file);
-			/**
-			 * If you want to use your own detecter uncomment the following lines
-			 */
 			typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<6> > image_scanner_type;
 			dlib::object_detector<image_scanner_type> d;
 			dlib::deserialize(svm_file) >> d;
-
-			/**
-			 * Else using the given get the face detector
-			 */
-			//dlib::frontal_face_detector d = dlib::get_frontal_face_detector();
-
 			uint64 nfrm = 0;
 
 			//Check how much time is consummed for each functions
@@ -215,47 +208,48 @@ void gui::run_listener(){
 			double uc_t;
 			double ps_t;
 			TIME_TYPE initial_t = clock_now();
+
 			cv::Mat temp;
 			// Grab and process frames until the main window is closed by the user.
 			while(cap.read(temp)) {
-				std::cout<<"entered"<<std::endl;
-				nfrm++;
-				TIME_TYPE current_t = clock_now();
-				// Grab a frame
-				// Turn OpenCV's Mat into something dlib can deal with. don't modify temp while using cimg.
-				dlib::cv_image<dlib::bgr_pixel> cimg(temp);
-				display.set_image(cimg);
-				// Detect faces every 10 frames (less laggy)
-				TIME_TYPE t6 = clock_now();
-				if(nfrm % 10 == 0) {
-					std::vector<dlib::rectangle> faces = d(cimg);
-					m_controller->process(faces, cimg);
+				std::cout<<"Reading: "<<ready_to_run<<std::endl;
+				if(ready_to_run){
+					nfrm++;
+					TIME_TYPE current_t = clock_now();
+					// Grab a frame
+					// Turn OpenCV's Mat into something dlib can deal with. don't modify temp while using cimg.
+					dlib::cv_image<dlib::bgr_pixel> cimg(temp);
+					display.set_image(cimg);
+					// Detect faces every 10 frames (less laggy)
+					TIME_TYPE t6 = clock_now();
+					if(nfrm % 10 == 0) {
+						std::vector<dlib::rectangle> faces = d(cimg);
+						m_controller->process(faces, cimg);
+					}
+
+					TIME_TYPE t1 = clock_now();
+					m_controller->update(cimg);              //update tracker
+					TIME_TYPE t2 = clock_now();
+					m_controller->updateCountersSituation(); //update number of people that crossed each lines for the current frame
+					TIME_TYPE t3 = clock_now();
+					m_controller->display();                 //display tracked object and lines
+					TIME_TYPE t4 = clock_now();
+					m_controller->printSituation();          //display those numbers
+					TIME_TYPE t5 = clock_now();
+
+					infoExecTime(t1,t2,t3,t4,t5,t6,current_t);
+
+					df_t += std::chrono::duration_cast<std::chrono::microseconds>( t1 - t6 ).count();
+					u_t  += std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+					uc_t  += std::chrono::duration_cast<std::chrono::microseconds>( t3 - t2 ).count();
+					d_t += std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
+					ps_t += std::chrono::duration_cast<std::chrono::microseconds>( t5 - t4 ).count();
+
+					if(nfrm == cap.get(CV_CAP_PROP_FRAME_COUNT) - 2) {
+						infoExecTimeLast(nfrm, df_t, u_t, d_t, uc_t, ps_t, current_t, initial_t);
+						break;
+					}
 				}
-
-				TIME_TYPE t1 = clock_now();
-				m_controller->update(cimg);              //update tracker
-				TIME_TYPE t2 = clock_now();
-				m_controller->updateCountersSituation(); //update number of people that crossed each lines for the current frame
-				TIME_TYPE t3 = clock_now();
-				m_controller->display();                 //display tracked object and lines
-				TIME_TYPE t4 = clock_now();
-				m_controller->printSituation();          //display those numbers
-				TIME_TYPE t5 = clock_now();
-
-				infoExecTime(t1,t2,t3,t4,t5,t6,current_t);
-
-				df_t += std::chrono::duration_cast<std::chrono::microseconds>( t1 - t6 ).count();
-				u_t  += std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-				uc_t  += std::chrono::duration_cast<std::chrono::microseconds>( t3 - t2 ).count();
-				d_t += std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
-				ps_t += std::chrono::duration_cast<std::chrono::microseconds>( t5 - t4 ).count();
-
-				if(nfrm == cap.get(CV_CAP_PROP_FRAME_COUNT) - 2) {
-					infoExecTimeLast(nfrm, df_t, u_t, d_t, uc_t, ps_t, current_t, initial_t);
-
-					break;
-				}
-
 			}
 			//opencv videocapture cause some memory leak... even with the release() call (which is probably useless)
 			cap.release();
@@ -263,10 +257,11 @@ void gui::run_listener(){
 		}
 	}
 }
+
 void gui::run_handler(){
-
-	ready_to_run = true;
-
+	ready_to_run = !ready_to_run;
+	if(ready_to_run)
+		run.set_name("pause");
 }
 
 
