@@ -51,8 +51,10 @@ public:
 	// Return the best line (closest ?) to the object
 	CT::identifier_t getBestLine(dlib::point p);
 	std::map<CT::identifier_t, CT::Line> getLines();
+	// Add a line to the set of selected lines
 	void addSelectedLine(CT::identifier_t id);
-
+	// Delete every line in the set of selected lines
+	void deleteSelectedLines();
 
 private:
 	//draw tracked object on frame

@@ -60,7 +60,6 @@ void Controller::update(dlib::cv_image<dlib::bgr_pixel> & cimg) {
 		} else{
 			++it;
 		}
-
 	}
 }
 
@@ -84,9 +83,10 @@ void Controller::display(){
 void Controller::displayTrackers() {
 	for(auto & tracker : trackers) {
 		CT::Tracker & t = tracker.second;
+		dlib::rgb_pixel p((8*t.getId()*t.getId())%127 + 128, (5*t.getId()*t.getId()*t.getId())%127 + 128, (t.getId()*t.getId())%127 + 128);
 		dlib::rectangle center_rect = dlib::centered_rect(dlib::center(t.getTracker().get_position()), 5, 5);
-		m_editor->display.add_overlay(dlib::image_window::overlay_rect(center_rect, dlib::rgb_pixel(8*t.getId()*t.getId(), 5*t.getId()*t.getId()*t.getId(), t.getId()*t.getId()), boost::lexical_cast<std::string>(t.getId())));
-		m_editor->display.add_overlay(dlib::image_window::overlay_rect(t.getTracker().get_position(), dlib::rgb_pixel(8*t.getId()*t.getId(), 5*t.getId()*t.getId()*t.getId(), t.getId()*t.getId()), boost::lexical_cast<std::string>(t.getId())));
+		m_editor->display.add_overlay(dlib::image_window::overlay_rect(center_rect, p, boost::lexical_cast<std::string>(t.getId())));
+		m_editor->display.add_overlay(dlib::image_window::overlay_rect(t.getTracker().get_position(), p, boost::lexical_cast<std::string>(t.getId())));
 	}
 }
 
@@ -187,5 +187,11 @@ void Controller::addSelectedLine(CT::identifier_t id) {
 std::map<CT::identifier_t, CT::Line> Controller::getLines(){
 	return lines;
 }
+void Controller::deleteSelectedLines(){
+	for(CT::identifier_t line_id : to_be_removed) {
+		removeLine(line_id);
+	}
+}
+
 
 } /* namespace CT */

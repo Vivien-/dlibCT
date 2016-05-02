@@ -28,6 +28,8 @@ public:
     CT::Controller* controller();
 	dlib::image_display display;
 	void run_listener();
+	void setParameters(const std::string & _video_file, const std::string & _svm_file);
+
 private:
     CT::Controller * m_controller;
 	void svm_handler();
@@ -43,11 +45,15 @@ private:
 	void display_window_handler(const dlib::point& p, bool is_double_click, unsigned long state);
 	void delete_line_handler(const dlib::image_display::overlay_line);
 	void run_handler();
+	void progress_bar_handler();
+	virtual void on_keydown(unsigned long key, bool is_printable, unsigned long state);
+	virtual void on_window_resized();
 	dlib::button svm;
 	dlib::button video;
 	dlib::radio_button url;
 	dlib::radio_button local;
 	dlib::text_box link;
+	dlib::scroll_bar progress;
 	dlib::button run;
 	dlib::button stop;
 	dlib::check_box draw_lines;

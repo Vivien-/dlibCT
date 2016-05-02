@@ -7,6 +7,9 @@
 
 #include "gui.h"
 #include <chrono>
+#include <assert.h>
+#include <boost/lexical_cast.hpp>
+
 namespace CT {
 
 
@@ -55,7 +58,7 @@ void infoExecTime(TIME_TYPE t1, TIME_TYPE t2, TIME_TYPE t3, TIME_TYPE t4, TIME_T
 
 
 
-gui::gui() : svm(*this), display(*this), video(*this), url(*this), local(*this), link(*this), run(*this), stop(*this), draw_lines(*this){
+gui::gui() : svm(*this), display(*this), video(*this), url(*this), local(*this), link(*this), run(*this), stop(*this), draw_lines(*this), progress(*this, dlib::scroll_bar::HORIZONTAL) {
 	m_controller = nullptr;
 
 	//main window settings
@@ -72,6 +75,12 @@ gui::gui() : svm(*this), display(*this), video(*this), url(*this), local(*this),
 	video.set_name("Video");
 	video.set_click_handler(*this, &gui::video_handler);
 
+	progress.set_pos(20,200);
+	progress.set_length(150);
+	progress.set_max_slider_pos(100);
+	progress.set_slider_pos(0);
+	progress.hide();
+	progress.set_scroll_handler(*this, &gui::progress_bar_handler);
 
 	//
 	url.set_pos(10, 10);
@@ -194,7 +203,12 @@ void gui::run_listener(){
 	while(true){
 		std::cout<<"listener: "<<ready_to_run<<std::endl;
 		if(ready_to_run){
+			assert(video_file.compare("") != 0);
+			assert(svm_file.compare("") != 0);
+
 			cap = cv::VideoCapture(video_file);
+			if(cap.get(CV_CAP_PROP_FRAME_COUNT) > 0)
+				progress.show();
 			typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<6> > image_scanner_type;
 			dlib::object_detector<image_scanner_type> d;
 			dlib::deserialize(svm_file) >> d;
@@ -211,9 +225,11 @@ void gui::run_listener(){
 
 			cv::Mat temp;
 			// Grab and process frames until the main window is closed by the user.
-			while(cap.read(temp)) {
+			while(!this->is_closed()) {
 				std::cout<<"Reading: "<<ready_to_run<<std::endl;
 				if(ready_to_run){
+					cap.read(temp);
+					progress.set_slider_pos(100*((cap.get(CV_CAP_PROP_POS_FRAMES)+1)/cap.get(CV_CAP_PROP_FRAME_COUNT)));
 					nfrm++;
 					TIME_TYPE current_t = clock_now();
 					// Grab a frame
@@ -222,7 +238,7 @@ void gui::run_listener(){
 					display.set_image(cimg);
 					// Detect faces every 10 frames (less laggy)
 					TIME_TYPE t6 = clock_now();
-					if(nfrm % 10 == 0) {
+					if(nfrm % 1000 == 0) {
 						std::vector<dlib::rectangle> faces = d(cimg);
 						m_controller->process(faces, cimg);
 					}
@@ -262,7 +278,34 @@ void gui::run_handler(){
 	ready_to_run = !ready_to_run;
 	if(ready_to_run)
 		run.set_name("pause");
+	else
+		run.set_name("run");
 }
 
+void gui::setParameters(const std::string & _video_file, const std::string & _svm_file) {
+	svm_file = _svm_file;
+	video_file = _video_file;
+}
+
+void gui::on_keydown(unsigned long key, bool is_printable, unsigned long state) {
+    drawable_window::on_keydown(key, is_printable, state);
+	if(key == base_window::KEY_DELETE){
+		m_controller->deleteSelectedLines();
+	}
+}
+
+void gui::on_window_resized() {
+    drawable_window::on_window_resized();
+
+    unsigned long width, height;
+    get_size(width, height);
+
+    display.set_size(width - display.left(), height - display.top());
+}
+
+void gui::progress_bar_handler() {
+	std::cout<<"Video at "<<(float)progress.slider_pos()<<"%"<<std::endl;
+//	cap.set(CV_CAP_PROP_POS_AVI_RATIO, (float)progress.slider_pos()/100);
+}
 
 } /* namespace CT */
