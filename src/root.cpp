@@ -75,17 +75,27 @@ Root::~Root()
 void Root::run(int argc, char* argv[]) {
 	std::string _video_file = "";
 	std::string _svm_file = "";
+	bool _ready_to_run = false;
+
 	for (int i = 1; i < argc; i++) {
 		if (std::string(argv[i]) == "--video" || std::string(argv[i]) == "-v") {
 			_video_file = std::string(argv[i + 1]);
 		} else if (std::string(argv[i]) == "--svm" || std::string(argv[i]) == "-s") {
 			_svm_file = std::string(argv[i + 1]);
+		} else if (std::string(argv[i]) == "--run" || std::string(argv[i]) == "-r") {
+			_ready_to_run = true;
+		} else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
+			std::cout<<"Usage: ./ct [--video videoname] [--svm svmname] [--run]"<<"\n"
+					 <<"Usage: ./ct [--v videoname] [--s svmname] [--r]"<<"\n"
+					 <<"Usage ./ct -h"<<"\t ct --help"
+					 <<"\t display this information"<<std::endl;
+			asm("int3");
 		}
 	}
 	m_window->show();
 	m_controller->setEditor(m_window);
 	m_window->setController(m_controller);
-	m_window->setParameters(_video_file, _svm_file);
+	m_window->setParameters(_video_file, _svm_file, _ready_to_run);
 	m_window->run_listener();
 	m_window->wait_until_closed();
 }

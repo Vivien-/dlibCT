@@ -282,9 +282,14 @@ void gui::run_handler(){
 		run.set_name("run");
 }
 
-void gui::setParameters(const std::string & _video_file, const std::string & _svm_file) {
+void gui::setParameters(const std::string & _video_file, const std::string & _svm_file, bool _ready_to_run) {
 	svm_file = _svm_file;
 	video_file = _video_file;
+	ready_to_run = _ready_to_run;
+	if(ready_to_run)
+		run.set_name("pause");
+	else
+		run.set_name("run");
 }
 
 void gui::on_keydown(unsigned long key, bool is_printable, unsigned long state) {

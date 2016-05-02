@@ -28,7 +28,7 @@ public:
     CT::Controller* controller();
 	dlib::image_display display;
 	void run_listener();
-	void setParameters(const std::string & _video_file, const std::string & _svm_file);
+	void setParameters(const std::string & _video_file, const std::string & _svm_file, bool _ready_to_run);
 
 private:
     CT::Controller * m_controller;
