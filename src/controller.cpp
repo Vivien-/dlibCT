@@ -15,7 +15,7 @@ namespace CT {
 Controller::Controller() {
 	m_threshold = 4.5;
 	m_editor = nullptr;
-	maxFreezDuration = 15;
+	maxFreezDuration = 70;
 }
 
 Controller::~Controller() {
@@ -145,6 +145,7 @@ void Controller::printSituation() {
 	for(auto & counter : counters) {
 		int entered = counter.second.getIn();
 		int left = counter.second.getOut();
+		std::cout<<"p1 : "<<lines.find(counter.second.getLine())->second.getFirstEndpoint()<<" et p2 : "<<lines.find(counter.second.getLine())->second.getSecondEndpoint()<<std::endl;
 		s += "Counters[" + boost::lexical_cast<std::string>(counter.first) + "]: In=" + boost::lexical_cast<std::string>(entered) + " Out=" + boost::lexical_cast<std::string>(left) + "\n";
 	}
 	std::cout<<s<<std::endl;

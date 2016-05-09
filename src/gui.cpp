@@ -149,6 +149,7 @@ void gui::open_video_handler(const std::string& file_name){
 	cap = cv::VideoCapture(video_file);
 	cv::Mat temp;
 	cap >> temp;
+	cv::resize(temp, temp, cv::Size(225,450));
 	dlib::cv_image<dlib::bgr_pixel> cimg(temp);
 	const int left_menu_size = 200;
 	set_size(display.left() + cimg.nc() + 4 + left_menu_size, display.top() + cimg.nr() + 4 + left_menu_size);
@@ -207,9 +208,11 @@ void gui::run_listener(){
 			assert(svm_file.compare("") != 0);
 
 			cap = cv::VideoCapture(video_file);
+			cap.set(CV_CAP_PROP_FRAME_WIDTH, 500);
+			cap.set(CV_CAP_PROP_FRAME_HEIGHT, 900);
 			if(cap.get(CV_CAP_PROP_FRAME_COUNT) > 0)
 				progress.show();
-			typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<6> > image_scanner_type;
+			typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<2> > image_scanner_type;
 			dlib::object_detector<image_scanner_type> d;
 			dlib::deserialize(svm_file) >> d;
 			uint64 nfrm = 0;
@@ -229,16 +232,21 @@ void gui::run_listener(){
 				std::cout<<"Reading: "<<ready_to_run<<std::endl;
 				if(ready_to_run){
 					cap.read(temp);
+					cv::resize(temp, temp, cv::Size(225,450));
+					std::cout<<cap.get(CV_CAP_PROP_FRAME_WIDTH)<<std::endl;
+					std::cout<<cap.get(CV_CAP_PROP_FRAME_HEIGHT)<<std::endl;
 					progress.set_slider_pos(100*((cap.get(CV_CAP_PROP_POS_FRAMES)+1)/cap.get(CV_CAP_PROP_FRAME_COUNT)));
 					nfrm++;
 					TIME_TYPE current_t = clock_now();
 					// Grab a frame
 					// Turn OpenCV's Mat into something dlib can deal with. don't modify temp while using cimg.
+
 					dlib::cv_image<dlib::bgr_pixel> cimg(temp);
 					display.set_image(cimg);
+
 					// Detect faces every 10 frames (less laggy)
 					TIME_TYPE t6 = clock_now();
-					if(nfrm % 1000 == 0) {
+					if(nfrm % 1 == 0) {
 						std::vector<dlib::rectangle> faces = d(cimg);
 						m_controller->process(faces, cimg);
 					}
@@ -263,6 +271,7 @@ void gui::run_listener(){
 
 					if(nfrm == cap.get(CV_CAP_PROP_FRAME_COUNT) - 2) {
 						infoExecTimeLast(nfrm, df_t, u_t, d_t, uc_t, ps_t, current_t, initial_t);
+						asm("int3");
 						break;
 					}
 				}
