@@ -159,11 +159,16 @@ void gui::open_video_handler(const std::string& file_name){
 }
 
 void gui::svm_handler(){
-	open_existing_file_box(*this, &gui::open_svm_handler);
+	dlib::open_existing_file_box(*this, &gui::open_svm_handler);
 }
 
-void gui::open_svm_handler(const std::string& file_name){
-	svm_file = file_name;
+void gui::open_svm_handler(const std::string& dir_name){
+	svms = dlib::get_files_in_directory_tree(dir_name, dlib::match_endings(".svm"));
+//	dlib::object_detector< dlib::scan_fhog_pyramid<dlib::pyramid_down<3> > > detector;
+//	for(unsigned long i = 0; i < svms.size(); ++i) {
+//		dlib::deserialize(svms[i].full_name()) >> detector;
+//		detectors.push_back(detector);
+//	}
 }
 
 
@@ -205,16 +210,14 @@ void gui::run_listener(){
 		std::cout<<"listener: "<<ready_to_run<<std::endl;
 		if(ready_to_run){
 			assert(video_file.compare("") != 0);
-			assert(svm_file.compare("") != 0);
+//			assert(svm_file.compare("") != 0);
 
 			cap = cv::VideoCapture(video_file);
-			cap.set(CV_CAP_PROP_FRAME_WIDTH, 500);
-			cap.set(CV_CAP_PROP_FRAME_HEIGHT, 900);
 			if(cap.get(CV_CAP_PROP_FRAME_COUNT) > 0)
 				progress.show();
-			typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<2> > image_scanner_type;
-			dlib::object_detector<image_scanner_type> d;
-			dlib::deserialize(svm_file) >> d;
+//			typedef dlib::scan_fhog_pyramid<dlib::pyramid_down<2> > image_scanner_type;
+//			dlib::object_detector<image_scanner_type> d;
+//			dlib::deserialize(svm_file) >> d;
 			uint64 nfrm = 0;
 
 			//Check how much time is consummed for each functions
@@ -232,22 +235,21 @@ void gui::run_listener(){
 				std::cout<<"Reading: "<<ready_to_run<<std::endl;
 				if(ready_to_run){
 					cap.read(temp);
-					cv::resize(temp, temp, cv::Size(225,450));
-					std::cout<<cap.get(CV_CAP_PROP_FRAME_WIDTH)<<std::endl;
-					std::cout<<cap.get(CV_CAP_PROP_FRAME_HEIGHT)<<std::endl;
-					progress.set_slider_pos(100*((cap.get(CV_CAP_PROP_POS_FRAMES)+1)/cap.get(CV_CAP_PROP_FRAME_COUNT)));
+					cv::resize(temp, temp, cv::Size(270,480));
 					nfrm++;
+					progress.set_slider_pos(100*((cap.get(CV_CAP_PROP_POS_FRAMES)+1)/cap.get(CV_CAP_PROP_FRAME_COUNT)));
 					TIME_TYPE current_t = clock_now();
 					// Grab a frame
 					// Turn OpenCV's Mat into something dlib can deal with. don't modify temp while using cimg.
 
 					dlib::cv_image<dlib::bgr_pixel> cimg(temp);
 					display.set_image(cimg);
-
 					// Detect faces every 10 frames (less laggy)
 					TIME_TYPE t6 = clock_now();
 					if(nfrm % 1 == 0) {
-						std::vector<dlib::rectangle> faces = d(cimg);
+						//TODO: utiliser evaluate_detectors
+						std::vector<dlib::rectangle> faces = evaluate_detectors (detectors, cimg, 0.7);
+//						std::vector<dlib::rectangle> faces = d(cimg);
 						m_controller->process(faces, cimg);
 					}
 
@@ -291,10 +293,16 @@ void gui::run_handler(){
 		run.set_name("run");
 }
 
-void gui::setParameters(const std::string & _video_file, const std::string & _svm_file, bool _ready_to_run) {
-	svm_file = _svm_file;
+void gui::setParameters(const std::string & _video_file, const std::string & _directory, bool _ready_to_run) {
+	directory = _directory;
 	video_file = _video_file;
 	ready_to_run = _ready_to_run;
+	svms = dlib::get_files_in_directory_tree(directory, dlib::match_endings(".svm"));
+	dlib::object_detector< dlib::scan_fhog_pyramid<dlib::pyramid_down<3> > > detector;
+	for(unsigned long i = 0; i < svms.size(); ++i) {
+		dlib::deserialize(svms[i].full_name()) >> detector;
+		detectors.push_back(detector);
+	}
 	if(ready_to_run)
 		run.set_name("pause");
 	else

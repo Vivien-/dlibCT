@@ -58,7 +58,8 @@ private:
 	dlib::button stop;
 	dlib::check_box draw_lines;
 	bool choose_local;
-	std::string svm_file;
+//	std::string svm_file;
+	std::vector<dlib::file> svms;
 	std::string video_file;
 	bool can_draw_lines;
 	int click_step;
@@ -66,7 +67,8 @@ private:
 	dlib::point p2;
 	cv::VideoCapture cap;
 	bool ready_to_run;
-
+	std::string directory;
+	std::vector < dlib::object_detector< dlib::scan_fhog_pyramid<dlib::pyramid_down<3> > > > detectors;
 };
 
 } /* namespace CT */

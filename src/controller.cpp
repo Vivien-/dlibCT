@@ -146,7 +146,7 @@ void Controller::printSituation() {
 		int entered = counter.second.getIn();
 		int left = counter.second.getOut();
 		std::cout<<"p1 : "<<lines.find(counter.second.getLine())->second.getFirstEndpoint()<<" et p2 : "<<lines.find(counter.second.getLine())->second.getSecondEndpoint()<<std::endl;
-		s += "Counters[" + boost::lexical_cast<std::string>(counter.first) + "]: In=" + boost::lexical_cast<std::string>(entered) + " Out=" + boost::lexical_cast<std::string>(left) + "\n";
+		s += "Counters[" + boost::lexical_cast<std::string>(counter.first) + "]: In= " + boost::lexical_cast<std::string>(entered) + " \tOut=" + boost::lexical_cast<std::string>(left) + "\n";
 	}
 	std::cout<<s<<std::endl;
 	m_editor->display.add_overlay(dlib::image_window::overlay_rect(dlib::rectangle(), dlib::rgb_pixel(0,255,0), s));
