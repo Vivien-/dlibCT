@@ -1,0 +1,40 @@
+-----------Readme-------------------
+
+This document describes how to set the project in an eclipse environnement (tested on ubuntu 14.04 LTS)
+
+-----------OpenCV install-----------
+
+Download and install openCV in your machine : http://docs.opencv.org/3.1.0/d7/d9f/tutorial_linux_install.html#gsc.tab=0
+
+-----------Dlib install-------------
+
+Download an dinstall dlib :
+
+- Download -> http://dlib.net/
+- unpack dlib (you can unpack it anywhere we'll call this path $root)
+- cd $root/dlib
+- mkdir build
+- cd build
+- cmake ..
+- sudo make install
+- sudo ldconfig
+
+----------Boost install------------------
+
+This will probably become optional very soon, but for now it is necessary.
+
+In ubuntu type : sudo apt-get install : sudo apt-get install libboost-all-dev
+
+
+----------Eclipse setup------------------
+
+- open eclipse
+- file -> import -> Git -> Projects from Git then hit next
+- choose Clone URI then hit next
+- Paste this URI in the URI field https://github.com/Vivien-/dlibCT.git
+- enter your username and password then hit next
+- the next view will show the branches, leave everything as ot is and hit next
+- choose a local directory where to clone the repository the hit next
+- choose import existing project then hit next
+- hit finish
+- that's all you can now build and run the project
