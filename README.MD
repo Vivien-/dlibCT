@@ -23,10 +23,15 @@ Download an dinstall dlib :
 3. Install dlib 
 
 `cd $root/dlib`
+
 `mkdir build`
+
 `cd build`
+
 `cmake ..`
+
 `sudo make install`
+
 `sudo ldconfig`
 
 ## Boost install
